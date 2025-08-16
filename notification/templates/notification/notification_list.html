@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Notifications</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 text-gray-900 p-6">
+    <h1 class="text-3xl font-bold mb-6">Your Notifications</h1>
+
+    <div class="space-y-4">
+        {% for notification in notifications %}
+            <div class="bg-white p-4 rounded shadow hover:bg-gray-50 transition">
+                <a href="{% url 'notifications:mark_as_read' notification.pk %}">
+                    <div class="flex items-center justify-between">
+                        <p class="{% if not notification.is_read %}font-semibold{% endif %}">
+                            {{ notification.message }}
+                        </p>
+                        <span class="text-sm text-gray-500">
+                            {{ notification.created_at|naturaltime }}
+                        </span>
+                    </div>
+                </a>
+            </div>
+        {% empty %}
+            <p>No notifications found.</p>
+        {% endfor %}
+    </div>
+</body>
+</html>

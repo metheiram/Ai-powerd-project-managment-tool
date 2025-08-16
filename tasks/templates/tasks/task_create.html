@@ -1,0 +1,222 @@
+{% load widget_tweaks %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Create Task | TaskFlow</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #6366f1;
+            --secondary: #8b5cf6;
+            --dark: #0f172a;
+            --darker: #020617;
+            --light: #f1f5f9;
+            --card: #1e293b;
+        }
+        body {
+            background: radial-gradient(circle at center, var(--darker), var(--dark));
+            color: var(--light);
+        }
+        .glass-card {
+            background: rgba(30, 41, 59, 0.7);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 8px 32px rgba(2, 6, 23, 0.3);
+        }
+        .form-input {
+            background: rgba(15, 23, 42, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .form-input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
+            background: rgba(15, 23, 42, 0.8);
+        }
+        .progress-slider {
+            -webkit-appearance: none;
+            appearance: none;
+            height: 6px;
+            border-radius: 3px;
+            background: rgba(100, 116, 139, 0.3);
+        }
+        .progress-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: var(--primary);
+            cursor: pointer;
+            box-shadow: 0 2px 4px rgba(2, 6, 23, 0.3);
+        }
+        .animate-float {
+            animation: float 6s ease-in-out infinite;
+        }
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-8px); }
+        }
+    </style>
+</head>
+<body class="font-['Inter'] min-h-screen flex items-center justify-center p-4">
+<div class="glass-card w-full max-w-2xl rounded-xl overflow-hidden">
+    <div class="border-b border-gray-800 p-6 flex items-center justify-between">
+        <div class="flex items-center space-x-3">
+            <div class="bg-gradient-to-br from-indigo-500 to-purple-600 p-2 rounded-lg animate-float">
+                <i class="fas fa-tasks text-white text-xl"></i>
+            </div>
+            <h1 class="text-xl font-semibold">Create New Task</h1>
+        </div>
+        <a href="{% url 'tasks:tasks_tab' %}" class="text-gray-400 hover:text-gray-200 transition-colors">
+            <i class="fas fa-times"></i>
+        </a>
+    </div>
+    <div class="p-6 space-y-6">
+        <form method="POST" class="space-y-6">
+            {% csrf_token %}
+            {% if form.non_field_errors %}
+                <div class="bg-red-800/50 text-red-200 p-3 rounded">
+                    {{ form.non_field_errors.0 }}
+                </div>
+            {% endif %}
+
+            <div class="grid md:grid-cols-2 gap-6">
+                <div>
+                    <label class="block text-sm font-medium text-gray-400 mb-2">Task Title</label>
+                    {% render_field form.title class="form-input w-full px-4 py-3 rounded-lg focus:outline-none" placeholder="What needs to be done?" %}
+                    {% if form.title.errors %}
+                        <p class="text-red-400 text-sm mt-1">{{ form.title.errors.0 }}</p>
+                    {% endif %}
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-400 mb-2">Status</label>
+                    {% render_field form.status class="form-input w-full px-4 py-3 rounded-lg focus:outline-none appearance-none" %}
+                    {% if form.status.errors %}
+                        <p class="text-red-400 text-sm mt-1">{{ form.status.errors.0 }}</p>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- ✅ NEWLY ADDED: Project field -->
+            <div>
+                <label class="block text-sm font-medium text-gray-400 mb-2">Project</label>
+                {% render_field form.project class="form-input w-full px-4 py-3 rounded-lg focus:outline-none appearance-none" %}
+                {% if form.project.errors %}
+                    <p class="text-red-400 text-sm mt-1">{{ form.project.errors.0 }}</p>
+                {% endif %}
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium text-gray-400 mb-2">Description</label>
+                {% render_field form.description class="form-input w-full px-4 py-3 rounded-lg focus:outline-none" rows="3" placeholder="Add details about this task..." %}
+                {% if form.description.errors %}
+                    <p class="text-red-400 text-sm mt-1">{{ form.description.errors.0 }}</p>
+                {% endif %}
+            </div>
+
+            <div class="grid md:grid-cols-2 gap-6">
+                <div>
+                    <label class="block text-sm font-medium text-gray-400 mb-2">Assignee</label>
+                    {% render_field form.assignee class="form-input w-full px-4 py-3 rounded-lg focus:outline-none appearance-none" %}
+                    {% if form.assignee.errors %}
+                        <p class="text-red-400 text-sm mt-1">{{ form.assignee.errors.0 }}</p>
+                    {% endif %}
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-400 mb-2">Team Members</label>
+                    {% render_field form.team_members class="form-input w-full px-4 py-3 rounded-lg focus:outline-none" %}
+                    {% if form.team_members.errors %}
+                        <p class="text-red-400 text-sm mt-1">{{ form.team_members.errors.0 }}</p>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="grid md:grid-cols-2 gap-6">
+                <div>
+                    <label class="block text-sm font-medium text-gray-400 mb-2">Start Date</label>
+                    {% render_field form.start_date class="form-input w-full px-4 py-3 rounded-lg focus:outline-none" %}
+                    {% if form.start_date.errors %}
+                        <p class="text-red-400 text-sm mt-1">{{ form.start_date.errors.0 }}</p>
+                    {% endif %}
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-400 mb-2">Due Date</label>
+                    {% render_field form.due_date class="form-input w-full px-4 py-3 rounded-lg focus:outline-none" %}
+                    {% if form.due_date.errors %}
+                        <p class="text-red-400 text-sm mt-1">{{ form.due_date.errors.0 }}</p>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="grid md:grid-cols-2 gap-6">
+                <div>
+                    <label class="block text-sm font-medium text-gray-400 mb-2">Priority</label>
+                    {% render_field form.priority class="form-input w-full px-4 py-3 rounded-lg focus:outline-none appearance-none" %}
+                    {% if form.priority.errors %}
+                        <p class="text-red-400 text-sm mt-1">{{ form.priority.errors.0 }}</p>
+                    {% endif %}
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-400 mb-2">Progress</label>
+                    <div class="flex items-center space-x-4">
+                        {% render_field form.progress class="progress-slider w-full" type="range" min="0" max="100" %}
+                        <span id="progressValue" class="text-gray-300 font-medium w-12 text-center">0%</span>
+                    </div>
+                    {% if form.progress.errors %}
+                        <p class="text-red-400 text-sm mt-1">{{ form.progress.errors.0 }}</p>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium text-gray-400 mb-2">Commands</label>
+                {% render_field form.commands class="form-input w-full px-4 py-3 rounded-lg focus:outline-none font-mono text-sm" rows="2" placeholder="Add any special commands or notes..." %}
+                {% if form.commands.errors %}
+                    <p class="text-red-400 text-sm mt-1">{{ form.commands.errors.0 }}</p>
+                {% endif %}
+            </div>
+
+            <div class="flex justify-end space-x-3 pt-6 border-t border-gray-800">
+                <a href="{% url 'tasks:tasks_tab' %}" class="px-4 py-2.5 rounded-lg text-gray-300 hover:bg-gray-800 transition-colors">
+                    Cancel
+                </a>
+                <button type="submit" class="px-4 py-2.5 rounded-lg bg-gradient-to-r from-indigo-500 to-purple-600 text-white hover:from-indigo-600 hover:to-purple-700 transition-all shadow-lg">
+                    <i class="fas fa-plus mr-2"></i> Create Task
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const progressSlider = document.querySelector('input[type="range"]');
+        const progressValue = document.getElementById('progressValue');
+        if (progressSlider && progressValue) {
+            progressSlider.addEventListener('input', function () {
+                progressValue.textContent = this.value + '%';
+            });
+        }
+
+        const form = document.querySelector('form');
+        form.addEventListener('submit', function (e) {
+            const startInput = document.getElementById('id_start_date');
+            const dueInput = document.getElementById('id_due_date');
+            const startDate = new Date(startInput.value);
+            const dueDate = new Date(dueInput.value);
+
+            if (!startInput.value || !dueInput.value) return;
+
+            if (startDate > dueDate) {
+                alert('Due date must be after start date');
+                e.preventDefault();
+            }
+        });
+    });
+</script>
+</body>
+</html>

@@ -1,0 +1,404 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Settings - Profile</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: {
+              600: '#7c3aed',
+              700: '#6d28d9',
+            },
+            dark: {
+              800: '#1e293b',
+              900: '#0f172a',
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <script>
+    function togglePassword(id, iconId) {
+      const field = document.getElementById(id);
+      const icon = document.getElementById(iconId);
+      if (field.type === "password") {
+        field.type = "text";
+        icon.classList.remove("fa-eye");
+        icon.classList.add("fa-eye-slash");
+      } else {
+        field.type = "password";
+        icon.classList.remove("fa-eye-slash");
+        icon.classList.add("fa-eye");
+      }
+    }
+  </script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+    body {
+      font-family: 'Inter', sans-serif;
+    }
+
+    input, select {
+      background-color: #1e293b;
+      border: 1px solid #374151;
+      border-radius: 0.5rem;
+      padding: 0.625rem 1rem;
+      width: 100%;
+      color: white;
+      outline: none;
+      transition: all 0.3s;
+    }
+
+    input:focus, select:focus {
+      border-color: transparent;
+      box-shadow: 0 0 0 2px #7c3aed;
+    }
+
+    .checkbox-input {
+      height: 1.25rem;
+      width: 1.25rem;
+      border-radius: 0.25rem;
+      border: 1px solid #374151;
+      background-color: #1e293b;
+      color: #7c3aed;
+    }
+
+    .btn-primary {
+      background-color: #7c3aed;
+      color: white;
+      padding: 0.625rem 1.5rem;
+      border-radius: 0.5rem;
+      font-weight: 500;
+      transition: all 0.3s;
+    }
+
+    .btn-primary:hover {
+      background-color: #6d28d9;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    }
+
+    .btn-secondary {
+      background-color: #06b6d4;
+      color: white;
+      padding: 0.625rem 1.5rem;
+      border-radius: 0.5rem;
+      font-weight: 500;
+      transition: all 0.3s;
+    }
+
+    .btn-secondary:hover {
+      background-color: #0891b2;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    }
+
+    .sidebar-item {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.75rem;
+      border-radius: 0.5rem;
+      color: #d1d5db;
+      transition: all 0.3s;
+    }
+
+    .sidebar-item:hover {
+      background-color: #374151;
+    }
+
+    .sidebar-item.active {
+      background-color: #7c3aed;
+      color: white;
+    }
+
+    .card {
+      background-color: #1e293b;
+      border-radius: 0.75rem;
+      padding: 1.5rem;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+      border: 1px solid #374151;
+    }
+
+    .profile-pic {
+      width: 6rem;
+      height: 6rem;
+      border-radius: 9999px;
+      border: 4px solid #7c3aed;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+      object-fit: cover;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      padding: 0.125rem 0.625rem;
+      border-radius: 9999px;
+      font-size: 0.75rem;
+      font-weight: 500;
+    }
+
+    .badge-admin {
+      background-color: #f3e8ff;
+      color: #6b21a8;
+    }
+
+    .badge-user {
+      background-color: #dbeafe;
+      color: #1e40af;
+    }
+
+    .toggle-slider {
+      position: absolute;
+      left: 0;
+      top: 0;
+      height: 100%;
+      width: 100%;
+      background: none;
+    }
+  </style>
+</head>
+<body class="bg-dark-900 text-gray-100 min-h-screen">
+  <div class="flex">
+    <!-- Sidebar -->
+    <aside class="bg-dark-800 w-64 p-6 flex flex-col justify-between fixed inset-y-0 left-0 border-r border-gray-800">
+      <div>
+        <!-- Profile Section -->
+        <div class="flex flex-col items-center mb-8">
+          <form method="POST" enctype="multipart/form-data" action="{% url 'users:settings' %}">
+            {% csrf_token %}
+            <input type="hidden" name="update_profile" value="true">
+            <div class="relative mb-3">
+              <img src="{% if user.profile.profile_picture %}{{ user.profile.profile_picture.url }}{% else %}{% static 'data/default-profile.png' %}{% endif %}" 
+                   alt="Profile" 
+                   class="profile-pic"/>
+              <label for="profile_picture" class="absolute bottom-0 right-0 bg-primary-600 rounded-full p-2 cursor-pointer hover:bg-primary-700 transition-all">
+                <i class="fas fa-camera text-white text-sm"></i>
+              </label>
+              <input type="file" id="profile_picture" name="profile_picture" class="hidden" accept="image/*" onchange="this.form.submit();"/>
+            </div>
+          </form>
+          <h1 class="text-lg font-semibold mt-2 text-center">{{ user.username }}</h1>
+          <span class="badge {% if is_admin %}badge-admin{% else %}badge-user{% endif %} mt-1">
+            {% if is_admin %}Admin{% else %}User{% endif %}
+          </span>
+        </div>
+
+        <!-- Navigation -->
+        <nav class="space-y-1">
+          <ul>
+            <li>
+              {% if is_admin %}
+                <a href="{% url 'users:admin_dashboard' %}" class="sidebar-item">
+                  <i class="fas fa-home w-5"></i>
+                  <span>Home</span>
+                </a>
+              {% else %}
+                <a href="{% url 'dashboard' %}" class="sidebar-item">
+                  <i class="fas fa-home w-5"></i>
+                  <span>Home</span>
+                </a>
+              {% endif %}
+            </li>
+          </ul>
+          <a href="{% url 'project:project_tab' %}" class="sidebar-item">
+            <i class="fas fa-folder w-5"></i>
+            <span>Projects</span>
+          </a>
+          <a href="{% url 'tasks:tasks_tab' %}" class="sidebar-item">
+            <i class="fas fa-tasks w-5"></i>
+            <span>Tasks</span>
+          </a>
+          <a href="{% url 'notification:notification' %}" class="sidebar-item">
+            <i class="fas fa-bell w-5"></i>
+            <span>Notifications</span>
+          </a>
+          <a href="{% url 'users:settings' %}" class="sidebar-item active">
+            <i class="fas fa-cog w-5"></i>
+            <span>Settings</span>
+          </a>
+        </nav>
+      </div>
+
+      <div class="space-y-4">
+        <form method="POST" action="{% url 'users:logout' %}">
+          {% csrf_token %}
+          <button type="submit" class="w-full bg-red-600 hover:bg-red-700 text-white font-medium py-2.5 px-4 rounded-lg transition-all flex items-center justify-center space-x-2">
+            <i class="fas fa-sign-out-alt"></i>
+            <span>Logout</span>
+          </button>
+        </form>
+      </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="flex-1 ml-64 p-8">
+      {% if messages %}
+        <div class="space-y-3 mb-6">
+          {% for message in messages %}
+            <div class="{% if message.tags == 'success' %}bg-green-600{% else %}bg-red-600{% endif %} text-white p-4 rounded-lg flex items-center justify-between">
+              <div class="flex items-center space-x-2">
+                <i class="fas {% if message.tags == 'success' %}fa-check-circle{% else %}fa-exclamation-circle{% endif %}"></i>
+                <span>{{ message }}</span>
+              </div>
+              <button onclick="this.parentElement.remove()" class="text-white hover:text-gray-200">
+                <i class="fas fa-times"></i>
+              </button>
+            </div>
+          {% endfor %}
+        </div>
+      {% endif %}
+
+      <div class="flex items-center justify-between mb-8">
+        <div>
+          <h1 class="text-3xl font-bold">Settings</h1>
+          <p class="text-gray-400">Manage your account settings and preferences</p>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <!-- Profile Settings Card -->
+        <div class="card">
+          <div class="flex items-center justify-between mb-6">
+            <h2 class="text-xl font-semibold">Profile Information</h2>
+            <div class="p-2 rounded-full bg-primary-600/10">
+              <i class="fas fa-user text-primary-600 text-lg"></i>
+            </div>
+          </div>
+          
+          <form method="POST" enctype="multipart/form-data" class="space-y-5">
+            {% csrf_token %}
+            <input type="hidden" name="update_profile" value="true">
+
+            {% for field in user_form.visible_fields %}
+              <div>
+                <label class="block text-sm font-medium mb-2">{{ field.label }}</label>
+                {{ field }}
+                {% if field.errors %}
+                  <div class="text-red-400 text-sm mt-1">
+                    {{ field.errors|join:", " }}
+                  </div>
+                {% endif %}
+              </div>
+            {% endfor %}
+
+            {% for field in profile_form.visible_fields %}
+              <div>
+                <label class="block text-sm font-medium mb-2">{{ field.label }}</label>
+                {{ field }}
+                {% if field.errors %}
+                  <div class="text-red-400 text-sm mt-1">
+                    {{ field.errors|join:", " }}
+                  </div>
+                {% endif %}
+              </div>
+            {% endfor %}
+
+            <div class="flex justify-end pt-2">
+              <button type="submit" class="btn-primary">
+                Update Profile
+              </button>
+            </div>
+          </form>
+        </div>
+
+        <!-- Password and Preferences Card -->
+        <div class="card flex flex-col gap-6">
+          <!-- Password Settings Card -->
+          <div>
+            <div class="flex items-center justify-between mb-6">
+              <h2 class="text-xl font-semibold">Password Settings</h2>
+              <div class="p-2 rounded-full bg-cyan-600/10">
+                <i class="fas fa-lock text-cyan-600 text-lg"></i>
+              </div>
+            </div>
+            
+            <form method="POST" class="space-y-5">
+              {% csrf_token %}
+              <input type="hidden" name="change_password" value="true">
+
+              {% for field in password_form.visible_fields %}
+                <div class="relative">
+                  <label class="block text-sm font-medium mb-2">{{ field.label }}</label>
+                  {{ field }}
+                  {% if field.field.widget.input_type == "password" %}
+                    <i id="icon_{{ forloop.counter }}" 
+                       class="fas fa-eye absolute right-3 top-[2.4rem] cursor-pointer text-gray-400 hover:text-white transition-all" 
+                       onclick="togglePassword('{{ field.id_for_label }}', 'icon_{{ forloop.counter }}')"></i>
+                  {% endif %}
+                  {% if field.errors %}
+                    <div class="text-red-400 text-sm mt-1">
+                      {{ field.errors|join:", " }}
+                    </div>
+                  {% endif %}
+                </div>
+              {% endfor %}
+
+              <div class="flex justify-end pt-2">
+                <button type="submit" class="btn-secondary">
+                  Change Password
+                </button>
+              </div>
+            </form>
+          </div>
+
+          <!-- Preferences Card -->
+          <div>
+            <div class="flex items-center justify-between mb-6">
+              <h2 class="text-xl font-semibold">Preferences</h2>
+              <div class="p-2 rounded-full bg-purple-600/10">
+                <i class="fas fa-sliders-h text-purple-600 text-lg"></i>
+              </div>
+            </div>
+            
+            <form method="POST" class="space-y-5">
+              {% csrf_token %}
+              <input type="hidden" name="save_preferences" value="true">
+
+              <div class="flex items-center justify-between p-4 bg-dark-900 rounded-lg border border-gray-700">
+                <div>
+                  <h3 class="font-medium"> Notifications</h3>
+                  <p class="text-sm text-gray-400">Receive  notifications for important updates</p>
+                </div>
+                <label class="relative inline-flex items-center cursor-pointer">
+                  {{ preference_form.notifications_enabled }}
+                  <span class="sr-only">Toggle notifications</span>
+                  <span class="toggle-slider"></span>
+                </label>
+              </div>
+
+              <!-- <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                {% for field in preference_form.visible_fields %}
+                  {% if field.name != "notifications_enabled" %}
+                    <div>
+                      <label class="block text-sm font-medium mb-2">{{ field.label }}</label>
+                      {{ field }}
+                      {% if field.errors %}
+                        <div class="text-red-400 text-sm mt-1">
+                          {{ field.errors|join:", " }}
+                        </div>
+                      {% endif %}
+                    </div>
+                  {% endif %}
+                {% endfor %}
+              </div> -->
+
+              <div class="flex justify-end pt-2">
+                <button type="submit" class="btn-primary">
+                  Save Preferences
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+</body>
+</html>

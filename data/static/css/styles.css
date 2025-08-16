@@ -1,0 +1,141 @@
+
+    @keyframes fadeInFromBottom {
+      0% {
+        transform: translateY(20px);
+        opacity: 0;
+      }
+      100% {
+        transform: translateY(0);
+        opacity: 1;
+      }
+    }
+
+    @keyframes slideInFromLeft {
+      0% {
+        transform: translateX(-50px);
+        opacity: 0;
+      }
+      100% {
+        transform: translateX(0);
+        opacity: 1;
+      }
+    }
+
+    .animate-header {
+      animation: fadeInFromBottom 1s ease-out;
+    }
+
+    .animate-logo {
+      animation: slideInFromLeft 1s ease-out;
+    }
+
+    .animate-nav {
+      animation: slideInFromLeft 1s ease-out 0.3s;
+    }
+
+    .animate-buttons {
+      animation: fadeInFromBottom 1s ease-out 0.5s;
+    }
+
+    .hover\\:text-indigo-400:hover {
+      color: #6366f1;
+    }
+
+
+    @keyframes fadeIn {
+    0% {
+      opacity: 0;
+    }
+    100% {
+      opacity: 1;
+    }
+  }
+
+  .animate-fade-in {
+    animation: fadeIn 1s ease-out;
+  }
+
+  /* Smooth enlarge on click */
+  .transform:active {
+    transform: scale(1.1);
+  }
+
+
+  /* Fade-in animation for the section */
+  @keyframes fadeIn {
+    0% {
+      opacity: 0;
+    }
+    100% {
+      opacity: 1;
+    }
+  }
+
+  .animate-fade-in {
+    animation: fadeIn 1s ease-out;
+  }
+
+  /* Scroll animations for each feature */
+  .feature-item {
+    opacity: 0;
+    transform: translateY(50px);
+    transition: opacity 0.5s ease-out, transform 0.5s ease-out;
+  }
+
+  .feature-item.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  /* Smooth enlarge on click */
+  .transform:active {
+    transform: scale(1.1);
+  }
+  
+
+
+
+   /* Dark theme (default) */
+   body {
+      background-color: #1a202c;
+      color: white;
+    }
+
+    /* Light theme */
+    body.light-theme {
+      background-color: #f9fafb;
+      color: black;
+    }
+
+    /* Light theme for other elements */
+    .light-theme header,
+    .light-theme footer {
+      background-color: #f9fafb;
+    }
+
+    .light-theme .bg-gradient-to-r {
+      background-image: linear-gradient(to right, #38bdf8, #a855f7);
+    }
+
+    .light-theme .text-indigo-400 {
+      color: #6366f1;
+    }
+
+    .light-theme .hover\:scale-105:hover {
+      transform: scale(1.05);
+    }
+
+    /* Toggle button styling */
+    .toggle-btn {
+      cursor: pointer;
+      font-size: 20px;
+      color: #6366f1;
+      transition: color 0.3s;
+    }
+
+    .toggle-btn:hover {
+      color: #a855f7;
+    }
+
+
+  

@@ -1,0 +1,261 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Admin Dashboard | Projora</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://cdn.tailwindcss.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data:;">
+  <script src="https://cdn.tailwindcss.com" nonce="{{ request.csp_nonce }}"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    :root {
+      --primary: #6366f1;
+      --secondary: #8b5cf6;
+      --dark: #0f172a;
+      --darker: #020617;
+      --light: #f1f5f9;
+    }
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--darker);
+      color: var(--light);
+      overflow: hidden;
+    }
+    .glass-sidebar {
+      background: rgba(30, 41, 59, 0.8);
+      backdrop-filter: blur(10px);
+      border-right: 1px solid rgba(255, 255, 255, 0.08);
+    }
+    .stat-card {
+      background: rgba(15, 23, 42, 0.5);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      transition: all 0.3s ease;
+    }
+    .stat-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.2);
+    }
+    .nav-item {
+      transition: all 0.2s ease;
+    }
+    .nav-item:hover {
+      background: rgba(124, 58, 237, 0.2);
+    }
+    .active-nav {
+      background: rgba(124, 58, 237, 0.3);
+      border-left: 3px solid var(--primary);
+    }
+    .pro-card {
+      background: linear-gradient(135deg, rgba(124, 58, 237, 0.8), rgba(99, 102, 241, 0.8));
+    }
+  </style>
+</head>
+<body>
+  <div class="flex h-screen">
+    <!-- Sidebar -->
+<!-- Sidebar -->
+<aside class="bg-gray-800 text-white w-64 p-6 flex flex-col justify-between border-r border-gray-700">
+    <div>
+      <div class="mb-8 flex flex-col items-center">
+        <div class="w-16 h-16 rounded-full bg-gradient-to-r from-cyan-400 to-purple-500 flex items-center justify-center mb-3 hover:rotate-12 transition-transform">
+          <i class="fas fa-rocket text-2xl text-white"></i>
+        </div>
+        <h1 class="text-xl font-bold bg-gradient-to-r from-cyan-400 to-purple-500 text-transparent bg-clip-text">Projora</h1>
+      </div>
+
+      
+
+      <nav>
+        <ul class="space-y-3">
+          <li>
+            {% if is_admin %}
+              <a href="{% url 'users:admin_dashboard' %}" class="flex items-center p-3 rounded-lg hover:bg-purple-800/50 transition-colors">
+                <i class="fas fa-home mr-3 text-gray-400"></i>
+                <span>Home</span>
+              </a>
+            {% else %}
+              <a href="{% url 'dashboard' %}" class="flex items-center p-3 rounded-lg hover:bg-purple-800/50 transition-colors">
+                <i class="fas fa-home mr-3 text-gray-400"></i>
+                <span>Home</span>
+              </a>
+            {% endif %}
+          </li>
+          <li>
+            <a href="{% url 'project:project_tab' %}" class="flex items-center p-3 rounded-lg bg-purple-800/30 font-semibold transition-colors">
+              <i class="fas fa-project-diagram mr-3 text-purple-400"></i>
+              <span>Projects</span>
+            </a>
+          </li>
+          <li>
+            <a href="{% url 'tasks:tasks_tab' %}" class="flex items-center p-3 rounded-lg hover:bg-purple-800/50 transition-colors">
+              <i class="fas fa-tasks mr-3 text-gray-400"></i>
+              <span>Tasks</span>
+            </a>
+          </li>
+          <li>
+            <a href="{% url 'notification:notification' %}" class="flex items-center p-3 rounded-lg hover:bg-purple-800/50 transition-colors">
+              <i class="fas fa-bell mr-3 text-gray-400"></i>
+              <span>Notifications</span>
+              <span class="ml-auto bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-full">3</span>
+            </a>
+          </li>
+          <li>
+            <a href="{% url 'users:settings' %}" class="flex items-center p-3 rounded-lg hover:bg-purple-800/50 transition-colors">
+              <i class="fas fa-cog mr-3 text-gray-400"></i>
+              <span>Settings</span>
+            </a>
+          </li>
+        </ul>
+      </nav>
+      <div class="bg-gradient-to-r from-purple-600/80 to-cyan-500/80 p-4 rounded-xl mt-12 border border-purple-400/20">
+        <div class="flex items-center">
+          <i class="fas fa-crown text-yellow-300 mr-2"></i>
+          <h3 class="font-bold text-lg">Go PRO</h3>
+        </div>
+        <p class="text-sm mt-2 opacity-90">Upgrade to enjoy advanced features for your team.</p>
+        <button class="w-full bg-white/90 text-purple-700 px-4 py-2 mt-4 rounded-lg font-semibold hover:bg-white transition-colors flex items-center justify-center">
+          <i class="fas fa-bolt mr-2"></i>
+          Upgrade Now
+        </button>
+      </div>
+    </div>
+  </aside>
+
+    <!-- Main Content -->
+    <main class="flex-1 overflow-y-auto">
+      <!-- Header -->
+      <div class="flex justify-between items-center p-6 border-b border-gray-800">
+        <div>
+          <h1 class="text-2xl font-bold">Admin Dashboard</h1>
+          <p class="text-gray-400">Welcome back, {{ request.user.username }}</p>
+        </div>
+        <div class="flex items-center space-x-4">
+          <div class="relative">
+            <i class="fas fa-bell text-gray-400 hover:text-white cursor-pointer"></i>
+            {% if unread_notifications > 0 %}
+            <span class="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold px-1.5 py-0.5 rounded-full">
+              {{ unread_notifications }}
+            </span>
+            {% endif %}
+          </div>
+          <a href="{% url 'users:logout' %}" 
+             class="text-gray-400 hover:text-white transition-colors flex items-center space-x-2">
+            <i class="fas fa-sign-out-alt"></i>
+            <span>Logout</span>
+          </a>
+        </div>
+      </div>
+
+      <!-- Stats Grid -->
+      <div class="p-6">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+          <!-- Total Users -->
+          <div class="stat-card p-6 rounded-lg">
+            <div class="flex justify-between items-start">
+              <div>
+                <h2 class="text-lg font-semibold text-gray-400">Total Users</h2>
+                <p class="text-3xl font-bold text-cyan-400 mt-2">{{ total_users }}</p>
+              </div>
+              <div class="bg-cyan-900/30 p-3 rounded-full">
+                <i class="fas fa-users text-cyan-400"></i>
+              </div>
+            </div>
+            <p class="text-sm text-gray-400 mt-4">
+              <span class="text-green-400">+{{ new_users_last_week }}</span> this week
+            </p>
+          </div>
+
+          <!-- Total Projects -->
+          <div class="stat-card p-6 rounded-lg">
+            <div class="flex justify-between items-start">
+              <div>
+                <h2 class="text-lg font-semibold text-gray-400">Projects</h2>
+                <p class="text-3xl font-bold text-purple-400 mt-2">{{ total_projects }}</p>
+              </div>
+              <div class="bg-purple-900/30 p-3 rounded-full">
+                <i class="fas fa-project-diagram text-purple-400"></i>
+              </div>
+            </div>
+            <p class="text-sm text-gray-400 mt-4">
+              <span class="text-green-400">+{{ active_projects }}</span> active
+            </p>
+          </div>
+
+          <!-- Open Tasks -->
+          <div class="stat-card p-6 rounded-lg">
+            <div class="flex justify-between items-start">
+              <div>
+                <h2 class="text-lg font-semibold text-gray-400">Open Tasks</h2>
+                <p class="text-3xl font-bold text-green-400 mt-2">{{ open_tasks }}</p>
+              </div>
+              <div class="bg-green-900/30 p-3 rounded-full">
+                <i class="fas fa-tasks text-green-400"></i>
+              </div>
+            </div>
+            <p class="text-sm text-gray-400 mt-4">
+              <span class="text-red-400">{{ overdue_tasks }}</span> overdue
+            </p>
+          </div>
+
+          <!-- Unread Notifications -->
+          <div class="stat-card p-6 rounded-lg">
+            <div class="flex justify-between items-start">
+              <div>
+                <h2 class="text-lg font-semibold text-gray-400">Unread Notices</h2>
+                <p class="text-3xl font-bold text-yellow-400 mt-2">{{ unread_notifications }}</p>
+              </div>
+              <div class="bg-yellow-900/30 p-3 rounded-full">
+                <i class="fas fa-bell text-yellow-400"></i>
+              </div>
+            </div>
+            <p class="text-sm text-gray-400 mt-4">
+              <span class="text-yellow-400">{{ high_priority_notices }}</span> important
+            </p>
+          </div>
+        </div>
+
+        <!-- Recent Activity Section -->
+        <div class="bg-gray-800/50 rounded-lg border border-gray-700/50 p-6">
+          <div class="flex justify-between items-center mb-6">
+            <h2 class="text-xl font-semibold">Recent Activity</h2>
+            <a href="#" class="text-sm text-cyan-400 hover:text-cyan-300">View All</a>
+          </div>
+          <div class="space-y-4">
+            <!-- Activity items would go here -->
+            <div class="flex items-start space-x-4 p-3 hover:bg-gray-800/30 rounded-lg transition-colors">
+              <div class="bg-purple-500/20 p-2 rounded-full">
+                <i class="fas fa-project-diagram text-purple-400"></i>
+              </div>
+              <div>
+                <p class="font-medium">New project created</p>
+                <p class="text-sm text-gray-400">"Website Redesign" by Alex Johnson</p>
+                <p class="text-xs text-gray-500 mt-1">2 hours ago</p>
+              </div>
+            </div>
+            <!-- More activity items... -->
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- Secure JavaScript -->
+  <script nonce="{{ request.csp_nonce }}">
+  document.addEventListener('DOMContentLoaded', () => {
+    // Auto-hide alerts
+    const alerts = document.querySelectorAll('.alert');
+    alerts.forEach(alert => {
+      setTimeout(() => {
+        alert.style.transition = 'opacity 0.5s ease';
+        alert.style.opacity = '0';
+        setTimeout(() => alert.remove(), 500);
+      }, 3000);
+    });
+
+    // Add any other interactive elements here
+  });
+  </script>
+</body>
+</html>

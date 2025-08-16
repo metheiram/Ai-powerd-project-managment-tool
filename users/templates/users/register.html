@@ -1,0 +1,260 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Register - PRO PM</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+  <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+    
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: radial-gradient(circle at 10% 20%, rgba(17, 24, 39, 0.9) 0%, rgba(17, 24, 39, 1) 90%);
+      color: #fff;
+      overflow-x: hidden;
+    }
+    
+    .gradient-text {
+      background: linear-gradient(135deg, #22d3ee 0%, #a855f7 50%, #ec4899 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    
+    .form-container {
+      backdrop-filter: blur(16px) saturate(180%);
+      -webkit-backdrop-filter: blur(16px) saturate(180%);
+      background-color: rgba(31, 41, 55, 0.75);
+      border: 1px solid rgba(255, 255, 255, 0.125);
+    }
+    
+    input, select, textarea {
+      background-color: rgba(55, 65, 81, 0.7) !important;
+      color: #fff !important;
+      border: 1px solid rgba(255, 255, 255, 0.1) !important;
+      border-radius: 0.5rem !important;
+      padding: 0.75rem 1rem !important;
+      width: 100% !important;
+      margin-bottom: 1rem;
+      transition: all 0.3s ease;
+    }
+    
+    input:focus, select:focus, textarea:focus {
+      outline: none !important;
+      border-color: #22d3ee !important;
+      box-shadow: 0 0 0 3px rgba(34, 211, 238, 0.2) !important;
+    }
+    
+    label {
+      display: block;
+      margin-bottom: 0.5rem;
+      font-weight: 500;
+      color: #9ca3af;
+      font-size: 0.9rem;
+    }
+    
+    .errorlist {
+      color: #f87171;
+      font-size: 0.75rem;
+      margin-top: -0.5rem;
+      margin-bottom: 0.75rem;
+      list-style-type: none;
+      padding-left: 0;
+    }
+    
+    .btn-glow {
+      background: linear-gradient(135deg, #22d3ee 0%, #a855f7 100%);
+      box-shadow: 0 4px 15px rgba(34, 211, 238, 0.3);
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .btn-glow:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(168, 85, 247, 0.4);
+    }
+    
+    .btn-glow:after {
+      content: "";
+      position: absolute;
+      top: -50%;
+      left: -60%;
+      width: 200%;
+      height: 200%;
+      background: rgba(255, 255, 255, 0.13);
+      transform: rotate(30deg);
+      transition: all 0.3s ease;
+    }
+    
+    .btn-glow:hover:after {
+      left: 100%;
+    }
+    
+    .particle {
+      position: absolute;
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: -1;
+    }
+    
+    .floating {
+      animation: floating 6s ease-in-out infinite;
+    }
+    
+    @keyframes floating {
+      0% { transform: translateY(0px); }
+      50% { transform: translateY(-15px); }
+      100% { transform: translateY(0px); }
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col items-center justify-center p-4">
+
+  <!-- Animated Background Particles -->
+  <div id="particles-js"></div>
+
+  <header class="absolute top-0 left-0 w-full px-8 py-6 flex justify-between items-center z-10">
+    <div class="text-3xl font-bold gradient-text animate__animated animate__fadeInDown">
+      PRO PM
+    </div>
+    <a href="{% url 'users:login' %}" class="text-sm font-medium text-cyan-400 hover:text-purple-400 transition-colors duration-300 animate__animated animate__fadeInDown animate__delay-1s">
+      Already have an account? Sign In
+    </a>
+  </header>
+
+  <main class="w-full max-w-md mx-auto z-10 animate__animated animate__fadeInUp animate__delay-1s">
+    <div class="form-container rounded-2xl p-8 shadow-2xl floating">
+      <div class="text-center mb-8">
+        <h1 class="text-3xl font-bold gradient-text mb-2">Create Account</h1>
+        <p class="text-gray-400">Join thousands of project managers today</p>
+      </div>
+      
+      <!-- Original Form Structure Preserved Exactly -->
+      <form method="POST" novalidate>
+        {% csrf_token %}
+        {% for field in form %}
+          <div>
+            <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+            {{ field }}
+            {% if field.errors %}
+              <div class="errorlist">{{ field.errors|striptags }}</div>
+            {% endif %}
+          </div>
+        {% endfor %}
+        <div class="mt-4">
+          <button type="submit" class="btn-glow w-full px-6 py-3 text-white font-semibold rounded-full">
+            Register
+          </button>
+        </div>
+      </form>
+      
+      <div class="text-center mt-6 text-sm text-gray-400">
+        By registering, you agree to our <a href="#" class="text-cyan-400 hover:underline">Terms</a> and <a href="#" class="text-cyan-400 hover:underline">Privacy Policy</a>
+      </div>
+    </div>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
+  <script>
+    // Particles.js configuration
+    document.addEventListener('DOMContentLoaded', function() {
+      particlesJS("particles-js", {
+        "particles": {
+          "number": {
+            "value": 80,
+            "density": {
+              "enable": true,
+              "value_area": 800
+            }
+          },
+          "color": {
+            "value": ["#22d3ee", "#a855f7", "#ec4899"]
+          },
+          "shape": {
+            "type": "circle",
+            "stroke": {
+              "width": 0,
+              "color": "#000000"
+            },
+            "polygon": {
+              "nb_sides": 5
+            }
+          },
+          "opacity": {
+            "value": 0.3,
+            "random": true,
+            "anim": {
+              "enable": true,
+              "speed": 1,
+              "opacity_min": 0.1,
+              "sync": false
+            }
+          },
+          "size": {
+            "value": 5,
+            "random": true,
+            "anim": {
+              "enable": true,
+              "speed": 2,
+              "size_min": 1,
+              "sync": false
+            }
+          },
+          "line_linked": {
+            "enable": true,
+            "distance": 150,
+            "color": "#3b82f6",
+            "opacity": 0.2,
+            "width": 1
+          },
+          "move": {
+            "enable": true,
+            "speed": 1,
+            "direction": "none",
+            "random": true,
+            "straight": false,
+            "out_mode": "out",
+            "bounce": false,
+            "attract": {
+              "enable": true,
+              "rotateX": 600,
+              "rotateY": 1200
+            }
+          }
+        },
+        "interactivity": {
+          "detect_on": "canvas",
+          "events": {
+            "onhover": {
+              "enable": true,
+              "mode": "grab"
+            },
+            "onclick": {
+              "enable": true,
+              "mode": "push"
+            },
+            "resize": true
+          },
+          "modes": {
+            "grab": {
+              "distance": 140,
+              "line_linked": {
+                "opacity": 0.5
+              }
+            },
+            "push": {
+              "particles_nb": 4
+            }
+          }
+        },
+        "retina_detect": true
+      });
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,315 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Futuristic Header Animation</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+  <link rel="stylesheet" href="https://unpkg.com/aos@2.3.1/dist/aos.css">
+  <style>
+    /* Fade-in animation */
+    @keyframes fadeIn {
+      0% { opacity: 0; }
+      100% { opacity: 1; }
+    }
+
+    /* Text Slide-in from Left */
+    @keyframes slideInLeft {
+      0% { transform: translateX(-100%); opacity: 0; }
+      100% { transform: translateX(0); opacity: 1; }
+    }
+
+    /* Image Slide-in from Right */
+    @keyframes slideInRight {
+      0% { transform: translateX(100%); opacity: 0; }
+      100% { transform: translateX(0); opacity: 1; }
+    }
+
+    /* Applying the animations */
+    .animate-fade-in {
+      animation: fadeIn 1s ease-in-out;
+    }
+
+    .animate-slide-left {
+      animation: slideInLeft 1s ease-out forwards;
+    }
+
+    .animate-slide-right {
+      animation: slideInRight 1s ease-out forwards;
+    }
+  </style>
+</head>
+<body class="bg-gray-900 text-white">
+
+  <header class="w-full px-8 py-4 flex justify-between items-center animate-header">
+    <div class="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-purple-500 animate-logo transition-transform duration-300 hover:scale-110">
+      PRO PM
+    </div>
+    
+    <nav class="animate-nav">
+      <ul class="flex space-x-6 text-lg">
+        <li><a href="#home" class="hover:text-indigo-400 transition-all">HOME</a></li>
+        <li><a href="#features" class="hover:text-indigo-400 transition-all">FEATURES</a></li>
+        <li><a href="{% url 'users:login' %}" class="hover:text-indigo-400 transition-all">DASHBOARD</a></li>
+        <li><a href="#contact" class="hover:text-indigo-400 transition-all">CONTACT</a></li>
+        <li><a href="#privacy" class="hover:text-indigo-400 transition-all">PRIVACY POLICY</a></li>
+      </ul>
+    </nav>
+    <div class="flex space-x-4 animate-buttons">
+      <a href="{% url 'users:login' %}">
+        <button class="inline-block px-6 py-3 bg-gradient-to-r from-cyan-400 to-purple-500 text-white font-semibold rounded-full custom-shadow hover:opacity-90 hover:scale-105 transition-transform duration-300">
+          Login
+        </button>
+      </a>
+      
+      
+      <a href="{% url 'users:signup' %}">
+        <button class="inline-block px-6 py-3 bg-gradient-to-r from-cyan-400 to-purple-500 text-white font-semibold rounded-full custom-shadow hover:opacity-90 hover:scale-105 transition-transform duration-300">
+          Sign Up
+        </button>
+      </a>
+      
+       <button class="toggle-btn" id="theme-toggle">🌙</button> <!-- Toggle button -->
+    </div>
+  </header>
+
+
+<!--hero section-->
+
+<section class="flex flex-col lg:flex-row items-center justify-between px-8 lg:px-24 py-16 relative animate-fade-in">
+  <!-- Content with left slide animation -->
+  <div class="max-w-lg animate-slide-left">
+    <h1 id="hero-heading" class="text-5xl lg:text-6xl font-bold leading-tight transform transition-all duration-300 ease-in-out hover:scale-105">
+      Simplify <span id="dynamic-text" class="bg-gradient-to-r from-cyan-400 to-pink-500 text-transparent bg-clip-text"></span>
+    </h1>
+    <p class="mt-6 text-lg leading-relaxed">
+      Transform the way you manage projects with our powerful tool designed to simplify task management, boost team collaboration, and keep your projects on track. Stay organized, meet deadlines, and achieve your goals with ease—all in one intuitive platform.
+    </p>
+    <a id="hero-button" href="#" class="mt-6 inline-block px-6 py-3 bg-gradient-to-r from-cyan-400 to-purple-500 text-white font-semibold rounded-full custom-shadow hover:opacity-90 transition-all transform duration-300 ease-in-out hover:scale-105">
+      See More
+    </a>
+  </div>
+
+  <!-- Image with right slide animation -->
+  <div id="hero-image" class="mt-12 lg:mt-0 cursor-pointer animate-slide-right">
+    <img src="{% static 'images/proj managment.png' %}" alt="Project Management" class="max-w-full h-auto drop-shadow-lg transform transition-all duration-300 ease-in-out hover:scale-105">
+  </div>
+
+  <!-- Background Grid -->
+  <div class="absolute inset-0 bg-[url('grid.png')] opacity-10 pointer-events-none"></div>
+</section>
+
+<!-- Features Section -->
+<section id="features" class="px-8 lg:px-24 py-16 animate-fade-in">
+  <!-- Add your features content here -->
+</section>
+
+
+<!--features section-->
+<section>
+  <div class="space-y-16 px-6 md:px-12 lg:px-20 py-12">
+    <!-- Task Management -->
+    <div class="feature-item grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+      <img src="{% static 'images/task managment.jpeg' %}" alt="Task Management" class="w-full h-64 object-cover rounded-lg shadow-lg transform transition-all duration-300 ease-in-out hover:scale-105">
+      <div>
+        <h3 class="text-5xl font-bold text-blue-600 hover:text-blue-800 transition-colors">Task Management</h3>
+        <p class="mt-4 text-lg text-white">Assign, track, and prioritize tasks efficiently. Keep your team aligned with clear goals and deadlines.</p>
+      </div>
+    </div>
+
+    <!-- Project Timeline (Gantt Chart) -->
+    <div class="feature-item grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+      <div>
+        <h3 class="text-5xl font-bold text-green-600 hover:text-green-800 transition-colors">Project Timeline</h3>
+        <p class="mt-4 text-lg text-white">Visualize your project’s progress with an interactive Gantt chart. Manage dependencies and ensure timely delivery.</p>
+      </div>
+      <img src="{% static 'images/project Timeline.jpeg' %}" alt="Project Timeline" class="w-full h-64 object-cover rounded-lg shadow-lg transform transition-all duration-300 ease-in-out hover:scale-105">
+    </div>
+
+    <!-- Time Tracking -->
+    <div class="feature-item grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+      <img src="{% static 'images/time tracking.jpeg' %}" alt="Time Tracking" class="w-full h-64 object-cover rounded-lg shadow-lg transform transition-all duration-300 ease-in-out hover:scale-105">
+      <div>
+        <h3 class="text-5xl font-bold text-purple-600 hover:text-purple-800 transition-colors">Task Tracking</h3>
+        <p class="mt-4 text-lg text-white">Monitor work hours, improve productivity, and optimize resource allocation with accurate time tracking tools.</p>
+      </div>
+    </div>
+
+    <!-- Reporting & Analytics -->
+    <div class="feature-item grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+      <div>
+        <h3 class="text-5xl font-bold text-red-600 hover:text-red-800 transition-colors">Reporting & Analytics</h3>
+        <p class="mt-4 text-lg text-white">Generate insightful reports and analytics to measure team performance and project success.</p>
+      </div>
+      <img src="{% static 'images/reporting and analyisis.jpeg' %}" alt="Reporting & Analytics" class="w-full h-64 object-cover rounded-lg shadow-lg transform transition-all duration-300 ease-in-out hover:scale-105">
+    </div>
+  </div>
+</section>
+
+
+  <br>
+  <br>
+  <br>
+  <br>
+
+  <!-- Explore Section -->
+  <section id="explore" class=" animate-fade-in">
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 px-8 lg:px-24">
+      <!-- <div class="flex flex-col gap-8"> -->
+        <div class="flex flex-col gap-8" data-aos="fade-left">
+        <div class="flex gap-8"> 
+        
+          <img src="{% static 'images/team colleboration.jpeg' %}" alt="Team Collaboration" 
+               class="hoverable w-1/2 h-64 object-cover rounded-lg shadow-xl transform transition-transform duration-500 ease-in-out hover:scale-105">
+          <img src="{% static 'images/task automation.jpeg' %}" alt="Task Automation" 
+               class="hoverable w-1/2 h-64 object-cover rounded-lg shadow-xl transform transition-transform duration-500 ease-in-out hover:scale-105">
+        </div>
+        <img src="{% static 'images/progress tracking.jpeg' %}" alt="Progress Tracking" 
+             class="hoverable w-full h-64 object-cover rounded-lg shadow-xl transform transition-transform duration-500 ease-in-out hover:scale-105">
+      </div>
+  
+      <div class="flex flex-col justify-center"> 
+        <div class="flex flex-col justify-center" data-aos="fade-right">
+        <h2 class="text-5xl font-bold leading-tight transform transition-transform duration-500 ease-in-out hover:scale-105">
+          Explore the <span class="bg-gradient-to-r from-cyan-400 to-purple-500 text-transparent bg-clip-text">Future of Collaboration</span>
+        </h2>
+        <p class="mt-6 text-lg leading-relaxed opacity-80">
+          Revolutionize the way your team works with advanced collaboration tools, intelligent task automation, and real-time progress tracking. Empower your team to achieve more by leveraging cutting-edge features designed to simplify and streamline project management.
+        </p>
+        <div class="mt-6">
+          <a href="{% url 'users:login' %}" 
+             class="inline-block px-6 py-3 bg-gradient-to-r from-cyan-400 to-purple-500 text-white font-semibold rounded-full custom-shadow transform transition-transform duration-500 ease-in-out hover:scale-105">
+            Get Started
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+  
+  
+
+  <!-- Project Management Section -->
+  <section id="project-management" class="px-8 lg:px-24 py-16 animate-fade-in" data-aos="fade-up">
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+      <!-- Content -->
+      <div>
+        <h2 class="text-5xl font-bold leading-tight transform transition-transform duration-500 ease-in-out hover:scale-105">
+          Simplify <span class="bg-gradient-to-r from-cyan-400 to-purple-500 text-transparent bg-clip-text">Project Management</span>
+        </h2>
+        <p class="mt-6 text-lg leading-relaxed">
+          Manage your projects effortlessly with our all-in-one project management solution. Track progress, allocate resources, and collaborate effectively to achieve your milestones on time. Discover the smarter way to work with tools built for efficiency.
+        </p>
+        <a href="#" class="mt-6 inline-block px-6 py-3 bg-gradient-to-r from-cyan-400 to-purple-500 text-white font-semibold rounded-full custom-shadow transform transition-transform duration-500 ease-in-out hover:scale-105">
+          Learn More
+        </a>
+      </div>
+  
+      <!-- Image -->
+      <div>
+        <img src="{% static 'images/first.jpeg' %}" alt="Project Management Summary" 
+             class="w-full h-64 object-cover rounded-lg transform transition-transform duration-500 ease-in-out hover:scale-105">
+      </div>
+    </div>
+</section>
+
+<!-- Contact Section -->
+<section id="contact" class="px-8 lg:px-24 py-16">
+  <div class="max-w-7xl mx-auto bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900 text-white rounded-lg shadow-lg p-8">
+    <h2 class="text-5xl font-bold mb-6 text-center transform transition-transform duration-500 ease-in-out hover:scale-105">
+      Contact Us
+    </h2>
+    <p class="text-lg mb-8 text-center opacity-80">
+      We'd love to hear from you! Reach out with your queries and suggestions.
+    </p>
+    <form class="space-y-6">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <input 
+          type="text" 
+          placeholder="Your Name" 
+          class="w-full px-4 py-3 bg-gray-700 text-white rounded-lg focus:ring-2 focus:ring-cyan-400 focus:outline-none input-glow transform transition-transform duration-500 ease-in-out hover:scale-105">
+        <input 
+          type="email" 
+          placeholder="Your Email" 
+          class="w-full px-4 py-3 bg-gray-700 text-white rounded-lg focus:ring-2 focus:ring-cyan-400 focus:outline-none input-glow transform transition-transform duration-500 ease-in-out hover:scale-105">
+      </div>
+      <textarea 
+        placeholder="Your Message" 
+        rows="4" 
+        class="w-full px-4 py-3 bg-gray-700 text-white rounded-lg focus:ring-2 focus:ring-cyan-400 focus:outline-none input-glow transform transition-transform duration-500 ease-in-out hover:scale-105">
+      </textarea>
+      <div class="flex justify-center mt-6">
+        <button 
+          type="submit" 
+          class="px-6 py-3 bg-gradient-to-r from-cyan-400 to-purple-500 text-white font-semibold rounded-full custom-shadow transform transition-transform duration-500 ease-in-out hover:scale-105">
+          Submit
+        </button>
+      </div>
+    </form>
+  </div>
+</section>
+
+
+
+ <!-- Footer Section -->
+ <footer class="bg-gradient-to-r bg-gray-900 text-white py-12 mt-16">
+  <div class="max-w-7xl mx-auto px-8">
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-12 text-white">
+      <!-- About Us Section -->
+      <div class="transform transition-transform duration-500 ease-in-out hover:scale-105">
+        <h3 class="text-2xl font-semibold mb-4">About Us</h3>
+        <p class="text-lg opacity-80">
+          We are a leading company offering innovative project management solutions. Our tools are designed to optimize workflows, improve collaboration, and drive success.
+        </p>
+      </div>
+
+      <!-- Quick Links Section -->
+      <div>
+        <h3 class="text-2xl font-semibold mb-4 transform transition-transform duration-500 ease-in-out hover:scale-105">Quick Links</h3>
+        <ul class="space-y-4">
+          <li><a href="#home" class="hover:text-cyan-400 transform hover:scale-105 transition-all duration-300">Home</a></li>
+          <li><a href="#features" class="hover:text-cyan-400 transform hover:scale-105 transition-all duration-300">Features</a></li>
+          <li><a href="#services" class="hover:text-cyan-400 transform hover:scale-105 transition-all duration-300">Dashboard</a></li>
+          <li><a href="#contact" class="hover:text-cyan-400 transform hover:scale-105 transition-all duration-300">Contact</a></li>
+          <li><a href="#privacy" class="hover:text-cyan-400 transform hover:scale-105 transition-all duration-300">Privacy Policy</a></li>
+        </ul>
+      </div>
+
+      <!-- Contact Us Section -->
+      <div class="transform transition-transform duration-500 ease-in-out hover:scale-105">
+        <h3 class="text-2xl font-semibold mb-4">Contact Us</h3>
+        <p class="text-lg opacity-80 mb-4">
+          We'd love to hear from you! Reach out for any queries or collaboration opportunities.
+        </p>
+        <a href="mailto:info@holoshop.com" class="text-cyan-400 hover:text-purple-500 transform hover:scale-105 transition-all duration-300">info@holoshop.com</a>
+      </div>
+    </div>
+
+    <!-- Footer Bottom -->
+    <div class="text-center mt-8 text-sm opacity-70 transform transition-transform duration-500 ease-in-out hover:scale-105">
+      <p>&copy; 2025 PM PRO . All rights reserved.</p>
+    </div>
+  </div>
+</footer>
+
+
+
+
+
+</style>
+
+
+
+<script src="{% static 'js/script.js' %}"></script>
+<script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+<script>
+  AOS.init({
+    duration: 1000,  // Animation speed
+    once: true       // Animation sirf ek baar chale
+  });
+</script>
+
+
+</body>
+</html>

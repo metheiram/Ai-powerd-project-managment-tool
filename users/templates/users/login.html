@@ -1,0 +1,74 @@
+{% load static %}
+{% load widget_tweaks %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Login - PRO PM</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="{% static 'css/styles.css' %}" />
+  <style>
+    body, html {
+      margin: 0;
+      padding: 0;
+      height: 100vh;
+      overflow: hidden;
+    }
+  </style>
+</head>
+<body class="bg-gray-900 text-white flex flex-col items-center justify-center h-screen">
+  <header class="absolute top-0 left-0 w-full px-8 py-4 flex justify-between items-center">
+    <div class="text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-purple-500 transition-transform duration-300 hover:scale-105">
+      PRO PM
+    </div>
+  </header>
+
+  <section class="flex justify-center items-center h-full w-full px-4">
+    <div class="max-w-md w-full bg-gray-800 p-10 rounded-xl shadow-2xl">
+      <h2 class="text-4xl font-extrabold text-center text-cyan-400 mb-8 animate-pulse">Sign In</h2>
+
+      {% if messages %}
+        {% for message in messages %}
+          <div class="bg-red-500 text-white text-center py-3 mb-6 rounded-lg shadow-md">
+            {{ message }}
+          </div>
+        {% endfor %}
+      {% endif %}
+
+      <form method="POST" action="">
+        {% csrf_token %}
+
+        <div class="mb-5">
+          <label for="{{ form.username.id_for_label }}" class="block text-sm font-medium text-white mb-2">Username</label>
+          {{ form.username|add_class:"w-full px-4 py-3 bg-gray-700 text-white rounded-lg focus:ring-4 focus:ring-cyan-400 focus:outline-none transition-all duration-300" }}
+          {% for error in form.username.errors %}
+            <p class="text-red-400 text-sm mt-1">{{ error }}</p>
+          {% endfor %}
+        </div>
+
+        <div class="mb-7">
+          <label for="{{ form.password.id_for_label }}" class="block text-sm font-medium text-white mb-2">Password</label>
+          {{ form.password|add_class:"w-full px-4 py-3 bg-gray-700 text-white rounded-lg focus:ring-4 focus:ring-cyan-400 focus:outline-none transition-all duration-300" }}
+          {% for error in form.password.errors %}
+            <p class="text-red-400 text-sm mt-1">{{ error }}</p>
+          {% endfor %}
+        </div>
+
+        <div class="mb-8">
+          <button type="submit" class="w-full px-6 py-3 bg-gradient-to-r from-cyan-400 to-purple-500 text-white font-semibold rounded-full hover:opacity-90 transition-all duration-300 transform hover:scale-105 shadow-lg">
+            Sign In
+          </button>
+        </div>
+
+        <div class="text-center">
+          <p class="text-sm text-white">
+            Don't have an account? 
+            <a href="{% url 'users:signup' %}" class="text-cyan-400 hover:text-cyan-300 font-medium transition-colors duration-200">Sign Up</a>
+          </p>
+        </div>
+      </form>
+    </div>
+  </section>
+</body>
+</html>
