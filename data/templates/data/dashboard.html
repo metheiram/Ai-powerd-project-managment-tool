@@ -189,10 +189,10 @@
           <div class="flex items-center justify-between">
             <div>
               <p class="text-gray-400 text-sm font-medium">Total Users</p>
-              <p class="text-3xl font-bold text-cyan-400 animate-pulse" id="total-users">{{ admin_stats.total_users }}</p>
+              <p class="text-3xl font-bold text-cyan-400 animate-pulse" id="total-users">{{ total_users }}</p>
               <p class="text-xs text-green-400 mt-1">
-                <i class="fas fa-arrow-up mr-1"></i>
-                <span id="users-growth">+5%</span> this month
+                <i class="fas fa-users mr-1"></i>
+                {{ active_users }} active users
               </p>
             </div>
             <div class="bg-cyan-500/20 p-4 rounded-full shadow-lg">
@@ -201,19 +201,19 @@
           </div>
         </div>
 
-        <!-- System Health Card -->
+        <!-- System Performance Card -->
         <div class="card metric-card rounded-xl p-6 hover:scale-105 transition-all duration-300 border-l-4 border-purple-400">
           <div class="flex items-center justify-between">
             <div>
-              <p class="text-gray-400 text-sm font-medium">Server Load</p>
-              <p class="text-3xl font-bold text-purple-400 animate-pulse" id="server-load">{{ admin_stats.server_load }}%</p>
-              <p class="text-xs text-red-400 mt-1">
-                <i class="fas fa-exclamation-triangle mr-1"></i>
-                High activity
+              <p class="text-gray-400 text-sm font-medium">Team Performance</p>
+              <p class="text-3xl font-bold text-purple-400 animate-pulse" id="team-performance">{{ team_performance }}%</p>
+              <p class="text-xs text-green-400 mt-1">
+                <i class="fas fa-chart-line mr-1"></i>
+                Task completion rate
               </p>
             </div>
             <div class="bg-purple-500/20 p-4 rounded-full shadow-lg">
-              <i class="fas fa-server text-purple-400 text-2xl"></i>
+              <i class="fas fa-chart-bar text-purple-400 text-2xl"></i>
             </div>
           </div>
         </div>
@@ -223,16 +223,16 @@
           <div class="flex items-center justify-between">
             <div>
               <p class="text-gray-400 text-sm font-medium">Overall Progress</p>
-              <p class="text-3xl font-bold text-green-400 animate-pulse" id="overall-progress">{{ admin_stats.overall_project_progress }}%</p>
+              <p class="text-3xl font-bold text-green-400 animate-pulse" id="overall-progress">{{ overall_project_progress }}%</p>
               <div class="flex items-center mt-2">
                 <div class="w-full bg-gray-700 rounded-full h-2 mr-2">
-                  <div class="bg-green-400 h-2 rounded-full transition-all duration-500" style="width: {{ admin_stats.overall_project_progress }}%"></div>
+                  <div class="bg-green-400 h-2 rounded-full transition-all duration-500" style="width: {{ overall_project_progress }}%"></div>
                 </div>
-                <span class="text-xs text-green-400">{{ admin_stats.overall_project_progress }}%</span>
+                <span class="text-xs text-green-400">{{ overall_project_progress }}%</span>
               </div>
               <p class="text-xs text-green-400 mt-1">
-                <i class="fas fa-arrow-up mr-1"></i>
-                <span id="progress-improvement">+7%</span> improved
+                <i class="fas fa-project-diagram mr-1"></i>
+                Project completion
               </p>
             </div>
             <div class="bg-green-500/20 p-4 rounded-full shadow-lg">
@@ -279,21 +279,15 @@
       {% else %}
       <!-- User Dashboard Content -->
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-        <!-- Total Projects Card -->
+        <!-- My Projects Card -->
         <div class="card metric-card rounded-xl p-6 hover:scale-105 transition-all duration-300 border-l-4 border-cyan-400">
           <div class="flex items-center justify-between">
             <div>
-              <p class="text-gray-400 text-sm font-medium">Total Projects</p>
+              <p class="text-gray-400 text-sm font-medium">My Projects</p>
               <p class="text-3xl font-bold text-cyan-400 animate-pulse" id="total-projects">{{ projects.count }}</p>
-              <div class="flex items-center mt-2">
-                <div class="w-full bg-gray-700 rounded-full h-2 mr-2">
-                  <div class="bg-cyan-400 h-2 rounded-full transition-all duration-500" style="width: 75%"></div>
-                </div>
-                <span class="text-xs text-cyan-400">75%</span>
-              </div>
-              <p class="text-xs text-green-400 mt-1">
-                <i class="fas fa-arrow-up mr-1"></i>
-                <span id="projects-growth">+12%</span> this month
+              <p class="text-xs text-gray-400 mt-1">
+                <i class="fas fa-project-diagram mr-1"></i>
+                Projects assigned to me
               </p>
             </div>
             <div class="bg-cyan-500/20 p-4 rounded-full shadow-lg">
@@ -302,21 +296,15 @@
           </div>
         </div>
 
-        <!-- Active Tasks Card -->
+        <!-- My Active Tasks Card -->
         <div class="card metric-card rounded-xl p-6 hover:scale-105 transition-all duration-300 border-l-4 border-purple-400">
           <div class="flex items-center justify-between">
             <div>
-              <p class="text-gray-400 text-sm font-medium">Active Tasks</p>
-              <p class="text-3xl font-bold text-purple-400 animate-pulse" id="active-tasks">{{ active_tasks_count|default:0 }}</p>
-              <div class="flex items-center mt-2">
-                <div class="w-full bg-gray-700 rounded-full h-2 mr-2">
-                  <div class="bg-purple-400 h-2 rounded-full transition-all duration-500" style="width: 60%"></div>
-                </div>
-                <span class="text-xs text-purple-400">60%</span>
-              </div>
-              <p class="text-xs text-green-400 mt-1">
-                <i class="fas fa-arrow-up mr-1"></i>
-                <span id="tasks-growth">+8%</span> this week
+              <p class="text-gray-400 text-sm font-medium">My Active Tasks</p>
+              <p class="text-3xl font-bold text-purple-400 animate-pulse" id="my-active-tasks">{{ my_active_tasks_count|default:active_tasks_count|default:0 }}</p>
+              <p class="text-xs text-gray-400 mt-1">
+                <i class="fas fa-tasks mr-1"></i>
+                Tasks in progress
               </p>
             </div>
             <div class="bg-purple-500/20 p-4 rounded-full shadow-lg">
@@ -325,21 +313,21 @@
           </div>
         </div>
 
-        <!-- Completion Rate Card -->
+        <!-- My Completion Rate Card -->
         <div class="card metric-card rounded-xl p-6 hover:scale-105 transition-all duration-300 border-l-4 border-green-400">
           <div class="flex items-center justify-between">
             <div>
-              <p class="text-gray-400 text-sm font-medium">Completion Rate</p>
-              <p class="text-3xl font-bold text-green-400 animate-pulse" id="completion-rate">78%</p>
+              <p class="text-gray-400 text-sm font-medium">My Completion Rate</p>
+              <p class="text-3xl font-bold text-green-400 animate-pulse" id="my-completion-rate">{{ my_completion_rate|default:completion_rate }}%</p>
               <div class="flex items-center mt-2">
                 <div class="w-full bg-gray-700 rounded-full h-2 mr-2">
-                  <div class="bg-green-400 h-2 rounded-full transition-all duration-500" style="width: 78%"></div>
+                  <div class="bg-green-400 h-2 rounded-full transition-all duration-500" style="width: {{ my_completion_rate|default:completion_rate }}%"></div>
                 </div>
-                <span class="text-xs text-green-400">78%</span>
+                <span class="text-xs text-green-400">{{ my_completion_rate|default:completion_rate }}%</span>
               </div>
               <p class="text-xs text-green-400 mt-1">
-                <i class="fas fa-arrow-up mr-1"></i>
-                <span id="completion-growth">+5%</span> improved
+                <i class="fas fa-check-circle mr-1"></i>
+                Personal progress
               </p>
             </div>
             <div class="bg-green-500/20 p-4 rounded-full shadow-lg">
@@ -348,21 +336,15 @@
           </div>
         </div>
 
-        <!-- Overdue Tasks Card -->
+        <!-- My Overdue Tasks Card -->
         <div class="card metric-card rounded-xl p-6 hover:scale-105 transition-all duration-300 border-l-4 border-red-400">
           <div class="flex items-center justify-between">
             <div>
-              <p class="text-gray-400 text-sm font-medium">Overdue Tasks</p>
-              <p class="text-3xl font-bold text-red-400 animate-pulse" id="overdue-tasks">{{ overdue_tasks_count|default:0 }}</p>
-              <div class="flex items-center mt-2">
-                <div class="w-full bg-gray-700 rounded-full h-2 mr-2">
-                  <div class="bg-red-400 h-2 rounded-full transition-all duration-500" style="width: 15%"></div>
-                </div>
-                <span class="text-xs text-red-400">15%</span>
-              </div>
+              <p class="text-gray-400 text-sm font-medium">My Overdue Tasks</p>
+              <p class="text-3xl font-bold text-red-400 animate-pulse" id="my-overdue-tasks">{{ my_overdue_tasks_count|default:overdue_tasks_count|default:0 }}</p>
               <p class="text-xs text-red-400 mt-1">
                 <i class="fas fa-exclamation-triangle mr-1"></i>
-                Need attention
+                Need immediate attention
               </p>
             </div>
             <div class="bg-red-500/20 p-4 rounded-full shadow-lg">
@@ -377,12 +359,22 @@
         <div class="card bg-gradient-to-br from-blue-600/20 to-blue-800/20 border border-blue-500/30 rounded-xl p-6">
           <div class="flex items-center justify-between">
             <div>
-              <h3 class="text-lg font-semibold text-blue-300 mb-2">Today's Focus</h3>
-              <p class="text-2xl font-bold text-white">{{ active_tasks_count }} Tasks</p>
-              <p class="text-sm text-blue-200 mt-1">Due today or soon</p>
+              <h3 class="text-lg font-semibold text-blue-300 mb-2">
+                {% if user.role == 'admin' %}System Health{% else %}Today's Focus{% endif %}
+              </h3>
+              <p class="text-2xl font-bold text-white">
+                {% if user.role == 'admin' %}
+                  {{ active_users }} / {{ total_users }}
+                {% else %}
+                  {{ my_active_tasks_count|default:active_tasks_count }} Tasks
+                {% endif %}
+              </p>
+              <p class="text-sm text-blue-200 mt-1">
+                {% if user.role == 'admin' %}Active users{% else %}Due today or soon{% endif %}
+              </p>
             </div>
             <div class="bg-blue-500/30 p-3 rounded-full">
-              <i class="fas fa-calendar-day text-blue-300 text-xl"></i>
+              <i class="fas {% if user.role == 'admin' %}fa-heartbeat{% else %}fa-calendar-day{% endif %} text-blue-300 text-xl"></i>
             </div>
           </div>
         </div>
@@ -390,12 +382,18 @@
         <div class="card bg-gradient-to-br from-emerald-600/20 to-emerald-800/20 border border-emerald-500/30 rounded-xl p-6">
           <div class="flex items-center justify-between">
             <div>
-              <h3 class="text-lg font-semibold text-emerald-300 mb-2">Team Performance</h3>
-              <p class="text-2xl font-bold text-white">{{ completion_rate }}%</p>
-              <p class="text-sm text-emerald-200 mt-1">Tasks completed on time</p>
+              <h3 class="text-lg font-semibold text-emerald-300 mb-2">
+                {% if user.role == 'admin' %}Team Performance{% else %}My Performance{% endif %}
+              </h3>
+              <p class="text-2xl font-bold text-white">
+                {% if user.role == 'admin' %}{{ team_performance }}%{% else %}{{ my_completion_rate|default:completion_rate }}%{% endif %}
+              </p>
+              <p class="text-sm text-emerald-200 mt-1">
+                {% if user.role == 'admin' %}Overall completion rate{% else %}Personal completion rate{% endif %}
+              </p>
             </div>
             <div class="bg-emerald-500/30 p-3 rounded-full">
-              <i class="fas fa-users text-emerald-300 text-xl"></i>
+              <i class="fas {% if user.role == 'admin' %}fa-users{% else %}fa-user-check{% endif %} text-emerald-300 text-xl"></i>
             </div>
           </div>
         </div>
@@ -403,9 +401,15 @@
         <div class="card bg-gradient-to-br from-amber-600/20 to-amber-800/20 border border-amber-500/30 rounded-xl p-6">
           <div class="flex items-center justify-between">
             <div>
-              <h3 class="text-lg font-semibold text-amber-300 mb-2">Weekly Progress</h3>
-              <p class="text-2xl font-bold text-white">{{ completed_tasks_count }}</p>
-              <p class="text-sm text-amber-200 mt-1">Tasks completed this week</p>
+              <h3 class="text-lg font-semibold text-amber-300 mb-2">
+                {% if user.role == 'admin' %}All Progress{% else %}My Progress{% endif %}
+              </h3>
+              <p class="text-2xl font-bold text-white">
+                {% if user.role == 'admin' %}{{ completed_tasks_count }}{% else %}{{ my_completed_tasks_count|default:completed_tasks_count }}{% endif %}
+              </p>
+              <p class="text-sm text-amber-200 mt-1">
+                {% if user.role == 'admin' %}Total completed tasks{% else %}My completed tasks{% endif %}
+              </p>
             </div>
             <div class="bg-amber-500/30 p-3 rounded-full">
               <i class="fas fa-chart-line text-amber-300 text-xl"></i>
@@ -639,8 +643,8 @@
             data: {
               labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
               datasets: [{
-                label: 'Logins',
-                data: [{{ admin_stats.user_activity.mon }}, {{ admin_stats.user_activity.tue }}, {{ admin_stats.user_activity.wed }}, {{ admin_stats.user_activity.thu }}, {{ admin_stats.user_activity.fri }}, {{ admin_stats.user_activity.sat }}, {{ admin_stats.user_activity.sun }}],
+                label: 'Active Users',
+                data: [25, 30, 28, 35, 32, 15, 12], // Mock data for user activity
                 backgroundColor: 'rgba(94, 234, 212, 0.6)',
                 borderColor: 'rgb(34, 197, 94)',
                 borderWidth: 1
@@ -662,10 +666,10 @@
           new Chart(ctxAdmin2, {
             type: 'line',
             data: {
-              labels: ['Q1', 'Q2', 'Q3', 'Q4'],
+              labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4'],
               datasets: [{
-                label: 'Performance Score',
-                data: [75, 82, 88, 91],
+                label: 'Team Performance %',
+                data: [{{ team_performance|default:75 }}, {{ team_performance|default:78 }}, {{ team_performance|default:82 }}, {{ team_performance|default:85 }}],
                 borderColor: 'rgb(168, 85, 247)',
                 backgroundColor: 'rgba(168, 85, 247, 0.1)',
                 tension: 0.4,
@@ -677,7 +681,12 @@
               maintainAspectRatio: false,
               plugins: { legend: { labels: { color: 'white' } } },
               scales: {
-                y: { ticks: { color: 'white' }, grid: { color: 'rgba(255, 255, 255, 0.1)' } },
+                y: { 
+                  min: 0,
+                  max: 100,
+                  ticks: { color: 'white' }, 
+                  grid: { color: 'rgba(255, 255, 255, 0.1)' } 
+                },
                 x: { ticks: { color: 'white' }, grid: { color: 'rgba(255, 255, 255, 0.1)' } }
               }
             }
@@ -688,14 +697,23 @@
       function loadDashboardMetrics() {
         // Use real data from Django context
         if ('{{ user.role }}' === 'admin') {
-          document.getElementById('total-users').textContent = '{{ admin_stats.total_users }}';
-          document.getElementById('server-load').textContent = '{{ admin_stats.server_load }}%';
-          document.getElementById('overall-progress').textContent = '{{ admin_stats.overall_project_progress }}%';
+          const totalUsersEl = document.getElementById('total-users');
+          const teamPerformanceEl = document.getElementById('team-performance');
+          const overallProgressEl = document.getElementById('overall-progress');
+          
+          if (totalUsersEl) totalUsersEl.textContent = '{{ total_users }}';
+          if (teamPerformanceEl) teamPerformanceEl.textContent = '{{ team_performance }}%';
+          if (overallProgressEl) overallProgressEl.textContent = '{{ overall_project_progress }}%';
         } else {
-          document.getElementById('total-projects').textContent = '{{ projects.count }}';
-          document.getElementById('active-tasks').textContent = '{{ active_tasks_count }}';
-          document.getElementById('completion-rate').textContent = '{{ completion_rate }}%';
-          document.getElementById('overdue-tasks').textContent = '{{ overdue_tasks_count }}';
+          const totalProjectsEl = document.getElementById('total-projects');
+          const myActiveTasksEl = document.getElementById('my-active-tasks');
+          const myCompletionRateEl = document.getElementById('my-completion-rate');
+          const myOverdueTasksEl = document.getElementById('my-overdue-tasks');
+          
+          if (totalProjectsEl) totalProjectsEl.textContent = '{{ projects.count }}';
+          if (myActiveTasksEl) myActiveTasksEl.textContent = '{{ my_active_tasks_count|default:active_tasks_count }}';
+          if (myCompletionRateEl) myCompletionRateEl.textContent = '{{ my_completion_rate|default:completion_rate }}%';
+          if (myOverdueTasksEl) myOverdueTasksEl.textContent = '{{ my_overdue_tasks_count|default:overdue_tasks_count }}';
         }
 
 

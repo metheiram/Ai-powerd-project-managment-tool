@@ -40,16 +40,28 @@ def dashboard(request):
         
         # Admin-specific metrics
         total_users = users.count()
-        new_users_this_week = users.filter(created_at__gte=timezone.now() - timezone.timedelta(days=7)).count()
+        active_users = users.filter(last_login__gte=timezone.now() - timezone.timedelta(days=30)).count()
+        inactive_users = users.filter(
+            Q(last_login__lt=timezone.now() - timezone.timedelta(days=30)) | 
+            Q(last_login__isnull=True)
+        ).count()
+        
+        # Calculate team performance (average completion rate across all users)
+        total_user_tasks = Task.objects.exclude(assignee__isnull=True).count()
+        completed_user_tasks = Task.objects.filter(status='completed').exclude(assignee__isnull=True).count()
+        team_performance = round((completed_user_tasks / total_user_tasks * 100), 1) if total_user_tasks > 0 else 0
+        
         admin_specific_data = {
             'total_users': total_users,
-            'new_users_this_week': new_users_this_week,
-            'active_users': users.filter(last_login__gte=timezone.now() - timezone.timedelta(days=30)).count(),
-            'inactive_users': users.filter(last_login__lt=timezone.now() - timezone.timedelta(days=30)).count(),
+            'active_users': active_users,
+            'inactive_users': inactive_users,
+            'team_performance': team_performance,
+            'server_load': 75,  # Mock data - you can implement real server monitoring
+            'overall_project_progress': 0,  # Will be calculated below
         }
     elif request.user.role == 'manager':
-        # Manager sees projects they created + all tasks
-        projects = Project.objects.filter(Q(created_by=request.user) | Q(assigned_users=request.user))
+        # Manager sees projects they created + tasks in those projects
+        projects = Project.objects.filter(created_by=request.user)
         tasks = Task.objects.filter(project__in=projects)
         admin_specific_data = {}
     else:
@@ -70,10 +82,16 @@ def dashboard(request):
     # Calculate completion rate
     completion_rate = round((completed_tasks_count / total_tasks_count * 100), 1) if total_tasks_count > 0 else 0
     
+    # Calculate overall project progress for admin
+    if request.user.role == 'admin':
+        total_projects = projects.count()
+        completed_projects = projects.filter(status='completed').count()
+        admin_specific_data['overall_project_progress'] = round((completed_projects / total_projects * 100), 1) if total_projects > 0 else 0
+    
     # Get project status counts
     project_status_counts = projects.values('status').annotate(count=Count('status'))
     
-    # Get user's personal tasks for user dashboard
+    # Get user's personal tasks for non-admin dashboards
     if request.user.role != 'admin':
         my_tasks = tasks.filter(assignee=request.user)
         my_active_tasks = my_tasks.filter(status__in=['not_started', 'in_progress'])
