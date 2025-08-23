@@ -50,6 +50,46 @@
       height: 6px;
       border-radius: 3px;
     }
+    
+    .metric-card {
+      background: linear-gradient(135deg, rgba(75, 85, 99, 0.1), rgba(55, 65, 81, 0.2));
+      border: 1px solid rgba(156, 163, 175, 0.2);
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .metric-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+      transition: left 0.8s;
+    }
+    
+    .metric-card:hover::before {
+      left: 100%;
+    }
+    
+    .animate-counter {
+      animation: countUp 2s ease-out forwards;
+    }
+    
+    @keyframes countUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    
+    .pulse-dot {
+      animation: pulse 2s infinite;
+    }
+    
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.5; }
+    }
   </style>
 </head>
 <body class="bg-gray-900 text-white">
@@ -133,68 +173,134 @@
         </div>
       </header>
 
-      <!-- Key Metrics Cards -->
+      <!-- Enhanced Key Metrics Cards -->
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-        <div class="card metric-card rounded-xl p-6">
+        <div class="card metric-card rounded-xl p-6 hover:scale-105 transition-all duration-300 border-l-4 border-cyan-400">
           <div class="flex items-center justify-between">
             <div>
               <p class="text-gray-400 text-sm font-medium">Total Projects</p>
-              <p class="text-2xl font-bold text-cyan-400" id="total-projects">0</p>
+              <p class="text-3xl font-bold text-cyan-400 animate-pulse" id="total-projects">{{ projects.count }}</p>
+              <div class="flex items-center mt-2">
+                <div class="w-full bg-gray-700 rounded-full h-2 mr-2">
+                  <div class="bg-cyan-400 h-2 rounded-full transition-all duration-500" style="width: 75%"></div>
+                </div>
+                <span class="text-xs text-cyan-400">75%</span>
+              </div>
               <p class="text-xs text-green-400 mt-1">
                 <i class="fas fa-arrow-up mr-1"></i>
                 <span id="projects-growth">+12%</span> this month
               </p>
             </div>
-            <div class="bg-cyan-500/20 p-3 rounded-full">
-              <i class="fas fa-project-diagram text-cyan-400 text-xl"></i>
+            <div class="bg-cyan-500/20 p-4 rounded-full shadow-lg">
+              <i class="fas fa-project-diagram text-cyan-400 text-2xl"></i>
             </div>
           </div>
         </div>
 
-        <div class="card metric-card rounded-xl p-6">
+        <div class="card metric-card rounded-xl p-6 hover:scale-105 transition-all duration-300 border-l-4 border-purple-400">
           <div class="flex items-center justify-between">
             <div>
               <p class="text-gray-400 text-sm font-medium">Active Tasks</p>
-              <p class="text-2xl font-bold text-purple-400" id="active-tasks">0</p>
+              <p class="text-3xl font-bold text-purple-400 animate-pulse" id="active-tasks">{{ active_tasks_count|default:0 }}</p>
+              <div class="flex items-center mt-2">
+                <div class="w-full bg-gray-700 rounded-full h-2 mr-2">
+                  <div class="bg-purple-400 h-2 rounded-full transition-all duration-500" style="width: 60%"></div>
+                </div>
+                <span class="text-xs text-purple-400">60%</span>
+              </div>
               <p class="text-xs text-green-400 mt-1">
                 <i class="fas fa-arrow-up mr-1"></i>
                 <span id="tasks-growth">+8%</span> this week
               </p>
             </div>
-            <div class="bg-purple-500/20 p-3 rounded-full">
-              <i class="fas fa-tasks text-purple-400 text-xl"></i>
+            <div class="bg-purple-500/20 p-4 rounded-full shadow-lg">
+              <i class="fas fa-tasks text-purple-400 text-2xl"></i>
             </div>
           </div>
         </div>
 
-        <div class="card metric-card rounded-xl p-6">
+        <div class="card metric-card rounded-xl p-6 hover:scale-105 transition-all duration-300 border-l-4 border-green-400">
           <div class="flex items-center justify-between">
             <div>
               <p class="text-gray-400 text-sm font-medium">Completion Rate</p>
-              <p class="text-2xl font-bold text-green-400" id="completion-rate">0%</p>
+              <p class="text-3xl font-bold text-green-400 animate-pulse" id="completion-rate">78%</p>
+              <div class="flex items-center mt-2">
+                <div class="w-full bg-gray-700 rounded-full h-2 mr-2">
+                  <div class="bg-green-400 h-2 rounded-full transition-all duration-500" style="width: 78%"></div>
+                </div>
+                <span class="text-xs text-green-400">78%</span>
+              </div>
               <p class="text-xs text-green-400 mt-1">
                 <i class="fas fa-arrow-up mr-1"></i>
                 <span id="completion-growth">+5%</span> improved
               </p>
             </div>
-            <div class="bg-green-500/20 p-3 rounded-full">
-              <i class="fas fa-chart-pie text-green-400 text-xl"></i>
+            <div class="bg-green-500/20 p-4 rounded-full shadow-lg">
+              <i class="fas fa-chart-pie text-green-400 text-2xl"></i>
             </div>
           </div>
         </div>
 
-        <div class="card metric-card rounded-xl p-6">
+        <div class="card metric-card rounded-xl p-6 hover:scale-105 transition-all duration-300 border-l-4 border-red-400">
           <div class="flex items-center justify-between">
             <div>
               <p class="text-gray-400 text-sm font-medium">Overdue Tasks</p>
-              <p class="text-2xl font-bold text-red-400" id="overdue-tasks">0</p>
+              <p class="text-3xl font-bold text-red-400 animate-pulse" id="overdue-tasks">{{ overdue_tasks_count|default:0 }}</p>
+              <div class="flex items-center mt-2">
+                <div class="w-full bg-gray-700 rounded-full h-2 mr-2">
+                  <div class="bg-red-400 h-2 rounded-full transition-all duration-500" style="width: 15%"></div>
+                </div>
+                <span class="text-xs text-red-400">15%</span>
+              </div>
               <p class="text-xs text-red-400 mt-1">
                 <i class="fas fa-exclamation-triangle mr-1"></i>
                 Need attention
               </p>
             </div>
-            <div class="bg-red-500/20 p-3 rounded-full">
-              <i class="fas fa-clock text-red-400 text-xl"></i>
+            <div class="bg-red-500/20 p-4 rounded-full shadow-lg">
+              <i class="fas fa-clock text-red-400 text-2xl"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Quick Statistics Section -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+        <div class="card bg-gradient-to-br from-blue-600/20 to-blue-800/20 border border-blue-500/30 rounded-xl p-6">
+          <div class="flex items-center justify-between">
+            <div>
+              <h3 class="text-lg font-semibold text-blue-300 mb-2">Today's Focus</h3>
+              <p class="text-2xl font-bold text-white">{{ active_tasks_count }} Tasks</p>
+              <p class="text-sm text-blue-200 mt-1">Due today or soon</p>
+            </div>
+            <div class="bg-blue-500/30 p-3 rounded-full">
+              <i class="fas fa-calendar-day text-blue-300 text-xl"></i>
+            </div>
+          </div>
+        </div>
+
+        <div class="card bg-gradient-to-br from-emerald-600/20 to-emerald-800/20 border border-emerald-500/30 rounded-xl p-6">
+          <div class="flex items-center justify-between">
+            <div>
+              <h3 class="text-lg font-semibold text-emerald-300 mb-2">Team Performance</h3>
+              <p class="text-2xl font-bold text-white">{{ completion_rate }}%</p>
+              <p class="text-sm text-emerald-200 mt-1">Tasks completed on time</p>
+            </div>
+            <div class="bg-emerald-500/30 p-3 rounded-full">
+              <i class="fas fa-users text-emerald-300 text-xl"></i>
+            </div>
+          </div>
+        </div>
+
+        <div class="card bg-gradient-to-br from-amber-600/20 to-amber-800/20 border border-amber-500/30 rounded-xl p-6">
+          <div class="flex items-center justify-between">
+            <div>
+              <h3 class="text-lg font-semibold text-amber-300 mb-2">Weekly Progress</h3>
+              <p class="text-2xl font-bold text-white">{{ completed_tasks_count }}</p>
+              <p class="text-sm text-amber-200 mt-1">Tasks completed this week</p>
+            </div>
+            <div class="bg-amber-500/30 p-3 rounded-full">
+              <i class="fas fa-chart-line text-amber-300 text-xl"></i>
             </div>
           </div>
         </div>
@@ -378,22 +484,29 @@
           }
         });
 
-        // Task Status Chart
+        // Task Status Chart with real data
         const ctx2 = document.getElementById('taskStatusChart').getContext('2d');
         new Chart(ctx2, {
           type: 'doughnut',
           data: {
-            labels: ['Completed', 'In Progress', 'Pending', 'Overdue'],
+            labels: ['Completed', 'In Progress', 'Not Started', 'Overdue'],
             datasets: [{
-              data: [45, 25, 20, 10],
+              data: [
+                {{ completed_tasks_count }}, 
+                {{ active_tasks_count }}, 
+                {{ total_tasks_count|add:"-"|add:completed_tasks_count|add:"-"|add:active_tasks_count }}, 
+                {{ overdue_tasks_count }}
+              ],
               backgroundColor: [
                 'rgb(34, 197, 94)',
                 'rgb(168, 85, 247)',
                 'rgb(6, 182, 212)',
                 'rgb(239, 68, 68)'
               ],
-              borderWidth: 2,
-              borderColor: 'rgb(17, 24, 39)'
+              borderWidth: 3,
+              borderColor: 'rgb(17, 24, 39)',
+              hoverBorderWidth: 5,
+              hoverOffset: 10
             }]
           },
           options: {
@@ -410,11 +523,11 @@
       }
 
       function loadDashboardMetrics() {
-        // Simulate loading metrics
-        document.getElementById('total-projects').textContent = '24';
-        document.getElementById('active-tasks').textContent = '156';
-        document.getElementById('completion-rate').textContent = '78%';
-        document.getElementById('overdue-tasks').textContent = '5';
+        // Use real data from Django context
+        document.getElementById('total-projects').textContent = '{{ projects.count }}';
+        document.getElementById('active-tasks').textContent = '{{ active_tasks_count }}';
+        document.getElementById('completion-rate').textContent = '{{ completion_rate }}%';
+        document.getElementById('overdue-tasks').textContent = '{{ overdue_tasks_count }}';
 
         // Load upcoming deadlines
         const deadlines = [
