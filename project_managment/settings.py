@@ -24,7 +24,13 @@ SECRET_KEY = 'django-insecure-yr0zt-jvh8giyqzna!&yhpg62y$=obab+n26)ag^%%u77)62(-
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+    '3347eeeb-f853-4824-ac2a-6b9ba2c0d97b-00-iwr73reo5iht.pike.replit.dev',
+    'localhost',
+    '127.0.0.1',
+    '0.0.0.0',
+    '*',  # Allow all hosts for development in Replit
+]
 
 
 # Application definition
