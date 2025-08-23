@@ -156,17 +156,64 @@ def profile_view(request):
 
 @admin_required
 def admin_dashboard(request):
-    # Example stats
-    total_users       = User.objects.count()
-    total_projects    = Project.objects.count()
-    open_tasks        = Task.objects.filter(status__in=['not_started','in_progress']).count()
-    unread_notifications = Notification.objects.filter(user=request.user, is_read=False).count()
-
+    from django.utils import timezone
+    from django.db.models import Q, Count
+    
+    # Comprehensive admin metrics
+    total_users = User.objects.count()
+    active_users = User.objects.filter(
+        last_login__gte=timezone.now() - timezone.timedelta(days=30)
+    ).count()
+    
+    total_projects = Project.objects.count()
+    active_projects = Project.objects.filter(status='in_progress').count()
+    completed_projects = Project.objects.filter(status='completed').count()
+    
+    # Task metrics
+    all_tasks = Task.objects.all()
+    open_tasks = all_tasks.filter(status__in=['not_started', 'in_progress']).count()
+    completed_tasks = all_tasks.filter(status='completed').count()
+    overdue_tasks = all_tasks.filter(
+        due_date__lt=timezone.now(),
+        status__in=['not_started', 'in_progress']
+    ).count()
+    
+    # Calculate team performance
+    total_tasks_count = all_tasks.count()
+    team_performance = round(
+        (completed_tasks / total_tasks_count * 100), 1
+    ) if total_tasks_count > 0 else 0
+    
+    # Calculate overall project progress
+    overall_project_progress = round(
+        (completed_projects / total_projects * 100), 1
+    ) if total_projects > 0 else 0
+    
+    # Recent activity stats
+    new_users_last_week = User.objects.filter(
+        date_joined__gte=timezone.now() - timezone.timedelta(days=7)
+    ).count()
+    
+    unread_notifications = Notification.objects.filter(
+        user=request.user, is_read=False
+    ).count()
+    
+    # Server metrics (mock data - you can implement real monitoring)
+    server_load = 35
 
     context = {
         'total_users': total_users,
+        'active_users': active_users,
+        'new_users_last_week': new_users_last_week,
         'total_projects': total_projects,
+        'active_projects': active_projects,
+        'completed_projects': completed_projects,
+        'overall_project_progress': overall_project_progress,
         'open_tasks': open_tasks,
+        'completed_tasks': completed_tasks,
+        'overdue_tasks': overdue_tasks,
+        'team_performance': team_performance,
+        'server_load': server_load,
         'unread_notifications': unread_notifications,
     }
     return render(request, 'users/admin_dashboard.html', context)

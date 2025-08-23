@@ -104,12 +104,21 @@
 
       <nav>
         <ul class="space-y-2">
+          {% if user.role == 'admin' %}
+          <li>
+            <a href="{% url 'users:admin_dashboard' %}" class="flex items-center p-3 rounded-lg bg-purple-800/50 text-purple-200 transition-colors">
+              <i class="fas fa-user-shield mr-3"></i>
+              <span>Admin Dashboard</span>
+            </a>
+          </li>
+          {% else %}
           <li>
             <a href="{% url 'dashboard' %}" class="flex items-center p-3 rounded-lg bg-purple-800/50 text-purple-200 transition-colors">
               <i class="fas fa-home mr-3"></i>
               <span>Home</span>
             </a>
           </li>
+          {% endif %}
           <li>
             <a href="{% url 'project:project_tab' %}" class="flex items-center p-3 rounded-lg hover:bg-purple-800/50 transition-colors">
               <i class="fas fa-project-diagram mr-3 text-gray-400"></i>
@@ -158,9 +167,9 @@
           {% if user.role == 'admin' %}
           <h1 class="text-3xl md:text-4xl font-bold flex items-center">
             <i class="fas fa-user-shield mr-3 text-purple-400"></i>
-            Admin <span class="bg-gradient-to-r from-cyan-400 to-purple-500 text-transparent bg-clip-text ml-2">Dashboard</span>
+            Admin <span class="bg-gradient-to-r from-cyan-400 to-purple-500 text-transparent bg-clip-text ml-2">Redirect</span>
           </h1>
-          <p class="text-gray-400 mt-2">System overview and administrative controls</p>
+          <p class="text-gray-400 mt-2">Redirecting to dedicated admin control panel</p>
           {% else %}
           <h1 class="text-3xl md:text-4xl font-bold flex items-center">
             <i class="fas fa-chart-line mr-3 text-purple-400"></i>
@@ -182,97 +191,19 @@
 
       <!-- Dynamic Content based on Role -->
       {% if user.role == 'admin' %}
-      <!-- Admin Dashboard Content -->
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
-        <!-- User Management Card -->
-        <div class="card metric-card rounded-xl p-6 hover:scale-105 transition-all duration-300 border-l-4 border-cyan-400">
-          <div class="flex items-center justify-between">
-            <div>
-              <p class="text-gray-400 text-sm font-medium">Total Users</p>
-              <p class="text-3xl font-bold text-cyan-400 animate-pulse" id="total-users">{{ total_users }}</p>
-              <p class="text-xs text-green-400 mt-1">
-                <i class="fas fa-users mr-1"></i>
-                {{ active_users }} active users
-              </p>
-            </div>
-            <div class="bg-cyan-500/20 p-4 rounded-full shadow-lg">
-              <i class="fas fa-users text-cyan-400 text-2xl"></i>
-            </div>
+      <!-- Admin users should use the dedicated admin dashboard -->
+      <div class="flex items-center justify-center min-h-[60vh]">
+        <div class="text-center">
+          <div class="w-24 h-24 mx-auto mb-6 rounded-full bg-gradient-to-r from-purple-600 to-cyan-500 flex items-center justify-center">
+            <i class="fas fa-user-shield text-3xl text-white"></i>
           </div>
-        </div>
-
-        <!-- System Performance Card -->
-        <div class="card metric-card rounded-xl p-6 hover:scale-105 transition-all duration-300 border-l-4 border-purple-400">
-          <div class="flex items-center justify-between">
-            <div>
-              <p class="text-gray-400 text-sm font-medium">Team Performance</p>
-              <p class="text-3xl font-bold text-purple-400 animate-pulse" id="team-performance">{{ team_performance }}%</p>
-              <p class="text-xs text-green-400 mt-1">
-                <i class="fas fa-chart-line mr-1"></i>
-                Task completion rate
-              </p>
-            </div>
-            <div class="bg-purple-500/20 p-4 rounded-full shadow-lg">
-              <i class="fas fa-chart-bar text-purple-400 text-2xl"></i>
-            </div>
-          </div>
-        </div>
-
-        <!-- Project Progress Card (Admin View) -->
-        <div class="card metric-card rounded-xl p-6 hover:scale-105 transition-all duration-300 border-l-4 border-green-400">
-          <div class="flex items-center justify-between">
-            <div>
-              <p class="text-gray-400 text-sm font-medium">Overall Progress</p>
-              <p class="text-3xl font-bold text-green-400 animate-pulse" id="overall-progress">{{ overall_project_progress }}%</p>
-              <div class="flex items-center mt-2">
-                <div class="w-full bg-gray-700 rounded-full h-2 mr-2">
-                  <div class="bg-green-400 h-2 rounded-full transition-all duration-500" style="width: {{ overall_project_progress }}%"></div>
-                </div>
-                <span class="text-xs text-green-400">{{ overall_project_progress }}%</span>
-              </div>
-              <p class="text-xs text-green-400 mt-1">
-                <i class="fas fa-project-diagram mr-1"></i>
-                Project completion
-              </p>
-            </div>
-            <div class="bg-green-500/20 p-4 rounded-full shadow-lg">
-              <i class="fas fa-chart-line text-green-400 text-2xl"></i>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Admin Specific Charts -->
-      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-        <!-- User Activity Chart -->
-        <div class="card chart-container rounded-xl p-6">
-          <div class="flex items-center justify-between mb-6">
-            <h3 class="text-xl font-bold flex items-center">
-              <i class="fas fa-chart-bar mr-3 text-purple-400"></i>
-              User Activity
-            </h3>
-            <div class="flex space-x-2">
-              <button class="text-xs px-3 py-1 bg-purple-500/20 text-purple-400 rounded-full">7D</button>
-              <button class="text-xs px-3 py-1 bg-gray-600 text-gray-300 rounded-full">30D</button>
-            </div>
-          </div>
-          <div class="h-64">
-            <canvas id="userActivityChart"></canvas>
-          </div>
-        </div>
-
-        <!-- Team Performance Chart -->
-        <div class="card chart-container rounded-xl p-6">
-          <div class="flex items-center justify-between mb-6">
-            <h3 class="text-xl font-bold flex items-center">
-              <i class="fas fa-users mr-3 text-cyan-400"></i>
-              Team Performance
-            </h3>
-            <button class="text-xs px-3 py-1 bg-cyan-500/20 text-cyan-400 rounded-full">This Quarter</button>
-          </div>
-          <div class="h-64">
-            <canvas id="teamPerformanceChart"></canvas>
-          </div>
+          <h2 class="text-2xl font-bold mb-4">Admin Dashboard Available</h2>
+          <p class="text-gray-400 mb-6">Access your dedicated admin control panel for comprehensive system management.</p>
+          <a href="{% url 'users:admin_dashboard' %}" 
+             class="inline-flex items-center px-6 py-3 bg-gradient-to-r from-purple-600 to-cyan-500 text-white font-semibold rounded-lg hover:from-purple-700 hover:to-cyan-600 transition-all">
+            <i class="fas fa-arrow-right mr-2"></i>
+            Go to Admin Dashboard
+          </a>
         </div>
       </div>
 

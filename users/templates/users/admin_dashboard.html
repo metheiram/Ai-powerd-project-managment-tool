@@ -1,4 +1,3 @@
-
 {% load static %}
 <!DOCTYPE html>
 <html lang="en">
@@ -513,7 +512,7 @@
   <script>
   document.addEventListener('DOMContentLoaded', () => {
     // Initialize Charts
-    initializeAdminCharts();
+    initializeUserCharts(); // Renamed to initializeUserCharts to reflect it's for general use
 
     // Auto-hide alerts
     const alerts = document.querySelectorAll('.alert');
@@ -525,7 +524,7 @@
       }, 3000);
     });
 
-    function initializeAdminCharts() {
+    function initializeUserCharts() {
       // User Activity Chart
       const ctx1 = document.getElementById('userActivityChart').getContext('2d');
       new Chart(ctx1, {
