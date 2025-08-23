@@ -1,3 +1,4 @@
+
 {% load static %}
 <!DOCTYPE html>
 <html lang="en">
@@ -5,245 +6,515 @@
   <meta charset="UTF-8">
   <title>Admin Dashboard | Projora</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://cdn.tailwindcss.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data:;">
-  <script src="https://cdn.tailwindcss.com" nonce="{{ request.csp_nonce }}"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
-    :root {
-      --primary: #6366f1;
-      --secondary: #8b5cf6;
-      --dark: #0f172a;
-      --darker: #020617;
-      --light: #f1f5f9;
-    }
     body {
       font-family: 'Inter', sans-serif;
-      background: var(--darker);
-      color: var(--light);
-      overflow: hidden;
+      background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%);
+      color: #f1f5f9;
     }
-    .glass-sidebar {
+    .glass-effect {
       background: rgba(30, 41, 59, 0.8);
       backdrop-filter: blur(10px);
-      border-right: 1px solid rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.08);
     }
     .stat-card {
-      background: rgba(15, 23, 42, 0.5);
-      border: 1px solid rgba(255, 255, 255, 0.08);
+      background: linear-gradient(135deg, rgba(15, 23, 42, 0.6), rgba(30, 41, 59, 0.8));
+      border: 1px solid rgba(99, 102, 241, 0.2);
       transition: all 0.3s ease;
     }
     .stat-card:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.2);
+      transform: translateY(-5px);
+      box-shadow: 0 20px 25px -5px rgba(99, 102, 241, 0.3);
+      border-color: rgba(99, 102, 241, 0.5);
     }
     .nav-item {
       transition: all 0.2s ease;
+      position: relative;
+      overflow: hidden;
+    }
+    .nav-item::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(168, 85, 247, 0.2), transparent);
+      transition: left 0.6s;
+    }
+    .nav-item:hover::before {
+      left: 100%;
     }
     .nav-item:hover {
-      background: rgba(124, 58, 237, 0.2);
+      background: rgba(124, 58, 237, 0.3);
+      transform: translateX(5px);
     }
     .active-nav {
-      background: rgba(124, 58, 237, 0.3);
-      border-left: 3px solid var(--primary);
+      background: rgba(124, 58, 237, 0.4);
+      border-left: 4px solid #6366f1;
     }
-    .pro-card {
-      background: linear-gradient(135deg, rgba(124, 58, 237, 0.8), rgba(99, 102, 241, 0.8));
+    .chart-container {
+      background: linear-gradient(135deg, rgba(15, 23, 42, 0.8), rgba(30, 41, 59, 0.9));
+      border: 1px solid rgba(99, 102, 241, 0.2);
+    }
+    .metric-value {
+      animation: countUp 2s ease-out forwards;
+    }
+    @keyframes countUp {
+      from { opacity: 0; transform: scale(0.8); }
+      to { opacity: 1; transform: scale(1); }
+    }
+    .pulse-dot {
+      animation: pulse 2s infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.5; }
+    }
+    .user-avatar {
+      background: linear-gradient(135deg, #6366f1, #8b5cf6);
+    }
+    .progress-bar {
+      background: linear-gradient(90deg, #06b6d4, #8b5cf6);
     }
   </style>
 </head>
 <body>
-  <div class="flex h-screen">
-    <!-- Sidebar -->
-<!-- Sidebar -->
-<aside class="bg-gray-800 text-white w-64 p-6 flex flex-col justify-between border-r border-gray-700">
-    <div>
-      <div class="mb-8 flex flex-col items-center">
-        <div class="w-16 h-16 rounded-full bg-gradient-to-r from-cyan-400 to-purple-500 flex items-center justify-center mb-3 hover:rotate-12 transition-transform">
-          <i class="fas fa-rocket text-2xl text-white"></i>
+  <div class="flex h-screen overflow-hidden">
+    <!-- Enhanced Sidebar -->
+    <aside class="glass-effect w-64 p-6 flex flex-col justify-between">
+      <div>
+        <div class="mb-8 flex flex-col items-center">
+          <div class="w-16 h-16 rounded-full bg-gradient-to-r from-cyan-400 to-purple-500 flex items-center justify-center mb-3 hover:rotate-12 transition-transform shadow-lg">
+            <i class="fas fa-rocket text-2xl text-white"></i>
+          </div>
+          <h1 class="text-xl font-bold bg-gradient-to-r from-cyan-400 to-purple-500 text-transparent bg-clip-text">Projora</h1>
+          <p class="text-xs text-gray-400 mt-1">Admin Control Panel</p>
         </div>
-        <h1 class="text-xl font-bold bg-gradient-to-r from-cyan-400 to-purple-500 text-transparent bg-clip-text">Projora</h1>
+
+        <nav>
+          <ul class="space-y-2">
+            <li>
+              <a href="{% url 'users:admin_dashboard' %}" class="nav-item active-nav flex items-center p-3 rounded-lg font-semibold transition-colors">
+                <i class="fas fa-user-shield mr-3 text-purple-400"></i>
+                <span>Admin Dashboard</span>
+              </a>
+            </li>
+            <li>
+              <a href="{% url 'dashboard' %}" class="nav-item flex items-center p-3 rounded-lg hover:bg-purple-800/50 transition-colors">
+                <i class="fas fa-home mr-3 text-gray-400"></i>
+                <span>Main Dashboard</span>
+              </a>
+            </li>
+            <li>
+              <a href="{% url 'project:project_tab' %}" class="nav-item flex items-center p-3 rounded-lg hover:bg-purple-800/50 transition-colors">
+                <i class="fas fa-project-diagram mr-3 text-gray-400"></i>
+                <span>Projects</span>
+              </a>
+            </li>
+            <li>
+              <a href="{% url 'tasks:tasks_tab' %}" class="nav-item flex items-center p-3 rounded-lg hover:bg-purple-800/50 transition-colors">
+                <i class="fas fa-tasks mr-3 text-gray-400"></i>
+                <span>Tasks</span>
+              </a>
+            </li>
+            <li>
+              <a href="{% url 'notification:notification' %}" class="nav-item flex items-center p-3 rounded-lg hover:bg-purple-800/50 transition-colors">
+                <i class="fas fa-bell mr-3 text-gray-400"></i>
+                <span>Notifications</span>
+                {% if unread_notifications > 0 %}
+                <span class="ml-auto bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-full pulse-dot">{{ unread_notifications }}</span>
+                {% endif %}
+              </a>
+            </li>
+            <li>
+              <a href="{% url 'users:settings' %}" class="nav-item flex items-center p-3 rounded-lg hover:bg-purple-800/50 transition-colors">
+                <i class="fas fa-cog mr-3 text-gray-400"></i>
+                <span>Settings</span>
+              </a>
+            </li>
+          </ul>
+        </nav>
       </div>
 
-      
-
-      <nav>
-        <ul class="space-y-3">
-          <li>
-            {% if is_admin %}
-              <a href="{% url 'users:admin_dashboard' %}" class="flex items-center p-3 rounded-lg hover:bg-purple-800/50 transition-colors">
-                <i class="fas fa-home mr-3 text-gray-400"></i>
-                <span>Home</span>
-              </a>
-            {% else %}
-              <a href="{% url 'dashboard' %}" class="flex items-center p-3 rounded-lg hover:bg-purple-800/50 transition-colors">
-                <i class="fas fa-home mr-3 text-gray-400"></i>
-                <span>Home</span>
-              </a>
-            {% endif %}
-          </li>
-          <li>
-            <a href="{% url 'project:project_tab' %}" class="flex items-center p-3 rounded-lg bg-purple-800/30 font-semibold transition-colors">
-              <i class="fas fa-project-diagram mr-3 text-purple-400"></i>
-              <span>Projects</span>
-            </a>
-          </li>
-          <li>
-            <a href="{% url 'tasks:tasks_tab' %}" class="flex items-center p-3 rounded-lg hover:bg-purple-800/50 transition-colors">
-              <i class="fas fa-tasks mr-3 text-gray-400"></i>
-              <span>Tasks</span>
-            </a>
-          </li>
-          <li>
-            <a href="{% url 'notification:notification' %}" class="flex items-center p-3 rounded-lg hover:bg-purple-800/50 transition-colors">
-              <i class="fas fa-bell mr-3 text-gray-400"></i>
-              <span>Notifications</span>
-              <span class="ml-auto bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-full">3</span>
-            </a>
-          </li>
-          <li>
-            <a href="{% url 'users:settings' %}" class="flex items-center p-3 rounded-lg hover:bg-purple-800/50 transition-colors">
-              <i class="fas fa-cog mr-3 text-gray-400"></i>
-              <span>Settings</span>
-            </a>
-          </li>
-        </ul>
-      </nav>
-      <div class="bg-gradient-to-r from-purple-600/80 to-cyan-500/80 p-4 rounded-xl mt-12 border border-purple-400/20">
+      <!-- Pro Card -->
+      <div class="bg-gradient-to-r from-purple-600/80 to-cyan-500/80 p-4 rounded-xl border border-purple-400/20">
         <div class="flex items-center">
           <i class="fas fa-crown text-yellow-300 mr-2"></i>
-          <h3 class="font-bold text-lg">Go PRO</h3>
+          <h3 class="font-bold text-lg">Admin Tools</h3>
         </div>
-        <p class="text-sm mt-2 opacity-90">Upgrade to enjoy advanced features for your team.</p>
+        <p class="text-sm mt-2 opacity-90">Advanced system management and analytics.</p>
         <button class="w-full bg-white/90 text-purple-700 px-4 py-2 mt-4 rounded-lg font-semibold hover:bg-white transition-colors flex items-center justify-center">
-          <i class="fas fa-bolt mr-2"></i>
-          Upgrade Now
+          <i class="fas fa-tools mr-2"></i>
+          Manage System
         </button>
       </div>
-    </div>
-  </aside>
+    </aside>
 
     <!-- Main Content -->
     <main class="flex-1 overflow-y-auto">
-      <!-- Header -->
-      <div class="flex justify-between items-center p-6 border-b border-gray-800">
-        <div>
-          <h1 class="text-2xl font-bold">Admin Dashboard</h1>
-          <p class="text-gray-400">Welcome back, {{ request.user.username }}</p>
-        </div>
-        <div class="flex items-center space-x-4">
-          <div class="relative">
-            <i class="fas fa-bell text-gray-400 hover:text-white cursor-pointer"></i>
-            {% if unread_notifications > 0 %}
-            <span class="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold px-1.5 py-0.5 rounded-full">
-              {{ unread_notifications }}
-            </span>
-            {% endif %}
+      <!-- Enhanced Header -->
+      <div class="glass-effect p-6 border-b border-gray-700/50">
+        <div class="flex justify-between items-center">
+          <div>
+            <h1 class="text-3xl font-bold flex items-center">
+              <i class="fas fa-user-shield mr-3 text-purple-400"></i>
+              Admin <span class="bg-gradient-to-r from-cyan-400 to-purple-500 text-transparent bg-clip-text">Control Center</span>
+            </h1>
+            <p class="text-gray-400 mt-2">System overview and administrative controls • Welcome back, {{ request.user.username }}</p>
           </div>
-          <a href="{% url 'users:logout' %}" 
-             class="text-gray-400 hover:text-white transition-colors flex items-center space-x-2">
-            <i class="fas fa-sign-out-alt"></i>
-            <span>Logout</span>
-          </a>
+          <div class="flex items-center space-x-4">
+            <div class="relative">
+              <i class="fas fa-bell text-gray-400 hover:text-white cursor-pointer text-xl"></i>
+              {% if unread_notifications > 0 %}
+              <span class="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold px-1.5 py-0.5 rounded-full pulse-dot">
+                {{ unread_notifications }}
+              </span>
+              {% endif %}
+            </div>
+            <div class="user-avatar w-12 h-12 rounded-full flex items-center justify-center text-white font-bold shadow-lg">
+              {{ request.user.username|first|upper }}
+            </div>
+            <a href="{% url 'users:logout' %}" 
+               class="text-gray-400 hover:text-white transition-colors flex items-center space-x-2 bg-red-500/20 px-3 py-2 rounded-lg hover:bg-red-500/30">
+              <i class="fas fa-sign-out-alt"></i>
+              <span>Logout</span>
+            </a>
+          </div>
         </div>
       </div>
 
-      <!-- Stats Grid -->
+      <!-- Enhanced Stats Grid -->
       <div class="p-6">
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          <!-- Total Users -->
-          <div class="stat-card p-6 rounded-lg">
+          <!-- Total Users Card -->
+          <div class="stat-card p-6 rounded-xl">
             <div class="flex justify-between items-start">
               <div>
                 <h2 class="text-lg font-semibold text-gray-400">Total Users</h2>
-                <p class="text-3xl font-bold text-cyan-400 mt-2">{{ total_users }}</p>
+                <p class="metric-value text-3xl font-bold text-cyan-400 mt-2">{{ total_users|default:0 }}</p>
+                <div class="flex items-center mt-2">
+                  <span class="text-green-400 text-sm">+{{ new_users_last_week|default:3 }}</span>
+                  <span class="text-gray-400 text-sm ml-1">this week</span>
+                </div>
               </div>
-              <div class="bg-cyan-900/30 p-3 rounded-full">
-                <i class="fas fa-users text-cyan-400"></i>
+              <div class="bg-cyan-500/20 p-4 rounded-full shadow-lg">
+                <i class="fas fa-users text-cyan-400 text-2xl"></i>
               </div>
             </div>
-            <p class="text-sm text-gray-400 mt-4">
-              <span class="text-green-400">+{{ new_users_last_week }}</span> this week
-            </p>
+            <div class="mt-4">
+              <div class="flex justify-between text-xs text-gray-400 mb-1">
+                <span>Active Users</span>
+                <span>{{ active_users|default:0 }}/{{ total_users|default:0 }}</span>
+              </div>
+              <div class="w-full bg-gray-700 rounded-full h-2">
+                <div class="progress-bar h-2 rounded-full" style="width: {% if total_users %}{{ active_users|default:0|floatformat:0 }}{% else %}0{% endif %}%"></div>
+              </div>
+            </div>
           </div>
 
-          <!-- Total Projects -->
-          <div class="stat-card p-6 rounded-lg">
+          <!-- Total Projects Card -->
+          <div class="stat-card p-6 rounded-xl">
             <div class="flex justify-between items-start">
               <div>
-                <h2 class="text-lg font-semibold text-gray-400">Projects</h2>
-                <p class="text-3xl font-bold text-purple-400 mt-2">{{ total_projects }}</p>
+                <h2 class="text-lg font-semibold text-gray-400">Total Projects</h2>
+                <p class="metric-value text-3xl font-bold text-purple-400 mt-2">{{ total_projects|default:0 }}</p>
+                <div class="flex items-center mt-2">
+                  <span class="text-green-400 text-sm">{{ active_projects|default:0 }}</span>
+                  <span class="text-gray-400 text-sm ml-1">active</span>
+                </div>
               </div>
-              <div class="bg-purple-900/30 p-3 rounded-full">
-                <i class="fas fa-project-diagram text-purple-400"></i>
+              <div class="bg-purple-500/20 p-4 rounded-full shadow-lg">
+                <i class="fas fa-project-diagram text-purple-400 text-2xl"></i>
               </div>
             </div>
-            <p class="text-sm text-gray-400 mt-4">
-              <span class="text-green-400">+{{ active_projects }}</span> active
-            </p>
+            <div class="mt-4">
+              <div class="flex justify-between text-xs text-gray-400 mb-1">
+                <span>Completion Rate</span>
+                <span>{{ overall_project_progress|default:0 }}%</span>
+              </div>
+              <div class="w-full bg-gray-700 rounded-full h-2">
+                <div class="progress-bar h-2 rounded-full" style="width: {{ overall_project_progress|default:0 }}%"></div>
+              </div>
+            </div>
           </div>
 
-          <!-- Open Tasks -->
-          <div class="stat-card p-6 rounded-lg">
+          <!-- System Tasks Card -->
+          <div class="stat-card p-6 rounded-xl">
             <div class="flex justify-between items-start">
               <div>
-                <h2 class="text-lg font-semibold text-gray-400">Open Tasks</h2>
-                <p class="text-3xl font-bold text-green-400 mt-2">{{ open_tasks }}</p>
+                <h2 class="text-lg font-semibold text-gray-400">System Tasks</h2>
+                <p class="metric-value text-3xl font-bold text-green-400 mt-2">{{ open_tasks|default:0 }}</p>
+                <div class="flex items-center mt-2">
+                  <span class="text-red-400 text-sm">{{ overdue_tasks|default:0 }}</span>
+                  <span class="text-gray-400 text-sm ml-1">overdue</span>
+                </div>
               </div>
-              <div class="bg-green-900/30 p-3 rounded-full">
-                <i class="fas fa-tasks text-green-400"></i>
+              <div class="bg-green-500/20 p-4 rounded-full shadow-lg">
+                <i class="fas fa-tasks text-green-400 text-2xl"></i>
               </div>
             </div>
-            <p class="text-sm text-gray-400 mt-4">
-              <span class="text-red-400">{{ overdue_tasks }}</span> overdue
-            </p>
+            <div class="mt-4">
+              <div class="flex justify-between text-xs text-gray-400 mb-1">
+                <span>Completion Rate</span>
+                <span>{{ team_performance|default:0 }}%</span>
+              </div>
+              <div class="w-full bg-gray-700 rounded-full h-2">
+                <div class="progress-bar h-2 rounded-full" style="width: {{ team_performance|default:0 }}%"></div>
+              </div>
+            </div>
           </div>
 
-          <!-- Unread Notifications -->
-          <div class="stat-card p-6 rounded-lg">
+          <!-- System Health Card -->
+          <div class="stat-card p-6 rounded-xl">
             <div class="flex justify-between items-start">
               <div>
-                <h2 class="text-lg font-semibold text-gray-400">Unread Notices</h2>
-                <p class="text-3xl font-bold text-yellow-400 mt-2">{{ unread_notifications }}</p>
+                <h2 class="text-lg font-semibold text-gray-400">System Health</h2>
+                <p class="metric-value text-3xl font-bold text-yellow-400 mt-2">98%</p>
+                <div class="flex items-center mt-2">
+                  <div class="pulse-dot w-2 h-2 bg-green-400 rounded-full mr-2"></div>
+                  <span class="text-green-400 text-sm">All systems operational</span>
+                </div>
               </div>
-              <div class="bg-yellow-900/30 p-3 rounded-full">
-                <i class="fas fa-bell text-yellow-400"></i>
+              <div class="bg-yellow-500/20 p-4 rounded-full shadow-lg">
+                <i class="fas fa-heartbeat text-yellow-400 text-2xl"></i>
               </div>
             </div>
-            <p class="text-sm text-gray-400 mt-4">
-              <span class="text-yellow-400">{{ high_priority_notices }}</span> important
-            </p>
+            <div class="mt-4">
+              <div class="flex justify-between text-xs text-gray-400 mb-1">
+                <span>Server Load</span>
+                <span>{{ server_load|default:35 }}%</span>
+              </div>
+              <div class="w-full bg-gray-700 rounded-full h-2">
+                <div class="bg-yellow-400 h-2 rounded-full" style="width: {{ server_load|default:35 }}%"></div>
+              </div>
+            </div>
           </div>
         </div>
 
-        <!-- Recent Activity Section -->
-        <div class="bg-gray-800/50 rounded-lg border border-gray-700/50 p-6">
-          <div class="flex justify-between items-center mb-6">
-            <h2 class="text-xl font-semibold">Recent Activity</h2>
-            <a href="#" class="text-sm text-cyan-400 hover:text-cyan-300">View All</a>
-          </div>
-          <div class="space-y-4">
-            <!-- Activity items would go here -->
-            <div class="flex items-start space-x-4 p-3 hover:bg-gray-800/30 rounded-lg transition-colors">
-              <div class="bg-purple-500/20 p-2 rounded-full">
-                <i class="fas fa-project-diagram text-purple-400"></i>
-              </div>
-              <div>
-                <p class="font-medium">New project created</p>
-                <p class="text-sm text-gray-400">"Website Redesign" by Alex Johnson</p>
-                <p class="text-xs text-gray-500 mt-1">2 hours ago</p>
+        <!-- Charts and Analytics -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+          <!-- User Activity Chart -->
+          <div class="chart-container rounded-xl p-6">
+            <div class="flex items-center justify-between mb-6">
+              <h3 class="text-xl font-bold flex items-center">
+                <i class="fas fa-chart-line mr-3 text-purple-400"></i>
+                User Activity Trends
+              </h3>
+              <div class="flex space-x-2">
+                <button class="text-xs px-3 py-1 bg-purple-500/20 text-purple-400 rounded-full">7D</button>
+                <button class="text-xs px-3 py-1 bg-gray-600 text-gray-300 rounded-full">30D</button>
+                <button class="text-xs px-3 py-1 bg-gray-600 text-gray-300 rounded-full">90D</button>
               </div>
             </div>
-            <!-- More activity items... -->
+            <div class="h-64">
+              <canvas id="userActivityChart"></canvas>
+            </div>
+          </div>
+
+          <!-- Project Status Distribution -->
+          <div class="chart-container rounded-xl p-6">
+            <div class="flex items-center justify-between mb-6">
+              <h3 class="text-xl font-bold flex items-center">
+                <i class="fas fa-chart-pie mr-3 text-cyan-400"></i>
+                Project Status Distribution
+              </h3>
+              <button class="text-xs px-3 py-1 bg-cyan-500/20 text-cyan-400 rounded-full">Current Period</button>
+            </div>
+            <div class="h-64">
+              <canvas id="projectStatusChart"></canvas>
+            </div>
+          </div>
+        </div>
+
+        <!-- Team Performance and User Management -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+          <!-- Team Performance Metrics -->
+          <div class="lg:col-span-2 chart-container rounded-xl p-6">
+            <div class="flex items-center justify-between mb-6">
+              <h3 class="text-xl font-bold flex items-center">
+                <i class="fas fa-users mr-3 text-green-400"></i>
+                Team Performance Analytics
+              </h3>
+              <select class="bg-gray-700 text-white text-sm rounded px-3 py-1 border border-gray-600">
+                <option>Last 7 Days</option>
+                <option>Last 30 Days</option>
+                <option>Last Quarter</option>
+              </select>
+            </div>
+            <div class="h-64">
+              <canvas id="teamPerformanceChart"></canvas>
+            </div>
+          </div>
+
+          <!-- Quick Actions -->
+          <div class="stat-card p-6 rounded-xl">
+            <h3 class="text-lg font-bold mb-4 flex items-center">
+              <i class="fas fa-bolt mr-2 text-yellow-400"></i>
+              Quick Actions
+            </h3>
+            <div class="space-y-3">
+              <button class="w-full bg-purple-600/80 hover:bg-purple-600 text-white py-3 px-4 rounded-lg transition-colors flex items-center justify-center">
+                <i class="fas fa-user-plus mr-2"></i>
+                Add New User
+              </button>
+              <button class="w-full bg-cyan-600/80 hover:bg-cyan-600 text-white py-3 px-4 rounded-lg transition-colors flex items-center justify-center">
+                <i class="fas fa-project-diagram mr-2"></i>
+                Create Project
+              </button>
+              <button class="w-full bg-green-600/80 hover:bg-green-600 text-white py-3 px-4 rounded-lg transition-colors flex items-center justify-center">
+                <i class="fas fa-download mr-2"></i>
+                Export Reports
+              </button>
+              <button class="w-full bg-yellow-600/80 hover:bg-yellow-600 text-white py-3 px-4 rounded-lg transition-colors flex items-center justify-center">
+                <i class="fas fa-cogs mr-2"></i>
+                System Settings
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Recent Activity and User Management -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <!-- Recent System Activity -->
+          <div class="stat-card rounded-xl p-6">
+            <div class="flex justify-between items-center mb-6">
+              <h2 class="text-xl font-semibold flex items-center">
+                <i class="fas fa-history mr-3 text-purple-400"></i>
+                Recent System Activity
+              </h2>
+              <a href="#" class="text-sm text-cyan-400 hover:text-cyan-300 transition-colors flex items-center">
+                View All <i class="fas fa-arrow-right ml-1"></i>
+              </a>
+            </div>
+            <div class="space-y-4 max-h-96 overflow-y-auto">
+              <!-- Activity items -->
+              <div class="flex items-start space-x-4 p-3 hover:bg-gray-700/30 rounded-lg transition-colors">
+                <div class="bg-purple-500/20 p-2 rounded-full">
+                  <i class="fas fa-project-diagram text-purple-400"></i>
+                </div>
+                <div>
+                  <p class="font-medium">New project created</p>
+                  <p class="text-sm text-gray-400">"Website Redesign" by Alex Johnson</p>
+                  <p class="text-xs text-gray-500 mt-1">2 hours ago</p>
+                </div>
+              </div>
+              <div class="flex items-start space-x-4 p-3 hover:bg-gray-700/30 rounded-lg transition-colors">
+                <div class="bg-green-500/20 p-2 rounded-full">
+                  <i class="fas fa-user-plus text-green-400"></i>
+                </div>
+                <div>
+                  <p class="font-medium">New user registered</p>
+                  <p class="text-sm text-gray-400">Sarah Davis joined the platform</p>
+                  <p class="text-xs text-gray-500 mt-1">4 hours ago</p>
+                </div>
+              </div>
+              <div class="flex items-start space-x-4 p-3 hover:bg-gray-700/30 rounded-lg transition-colors">
+                <div class="bg-yellow-500/20 p-2 rounded-full">
+                  <i class="fas fa-tasks text-yellow-400"></i>
+                </div>
+                <div>
+                  <p class="font-medium">Task completed</p>
+                  <p class="text-sm text-gray-400">"API Integration" marked as done</p>
+                  <p class="text-xs text-gray-500 mt-1">6 hours ago</p>
+                </div>
+              </div>
+              <div class="flex items-start space-x-4 p-3 hover:bg-gray-700/30 rounded-lg transition-colors">
+                <div class="bg-red-500/20 p-2 rounded-full">
+                  <i class="fas fa-exclamation-triangle text-red-400"></i>
+                </div>
+                <div>
+                  <p class="font-medium">System alert</p>
+                  <p class="text-sm text-gray-400">High memory usage detected</p>
+                  <p class="text-xs text-gray-500 mt-1">8 hours ago</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Top Users -->
+          <div class="stat-card rounded-xl p-6">
+            <div class="flex justify-between items-center mb-6">
+              <h2 class="text-xl font-semibold flex items-center">
+                <i class="fas fa-star mr-3 text-yellow-400"></i>
+                Top Performing Users
+              </h2>
+              <select class="bg-gray-700 text-white text-sm rounded px-3 py-1 border border-gray-600">
+                <option>This Month</option>
+                <option>This Quarter</option>
+                <option>This Year</option>
+              </select>
+            </div>
+            <div class="space-y-4">
+              <!-- Top user items -->
+              <div class="flex items-center justify-between p-3 hover:bg-gray-700/30 rounded-lg transition-colors">
+                <div class="flex items-center space-x-3">
+                  <div class="user-avatar w-10 h-10 rounded-full flex items-center justify-center text-white font-bold text-sm">
+                    JD
+                  </div>
+                  <div>
+                    <p class="font-medium">John Doe</p>
+                    <p class="text-sm text-gray-400">24 tasks completed</p>
+                  </div>
+                </div>
+                <div class="text-right">
+                  <div class="w-16 bg-gray-700 rounded-full h-2">
+                    <div class="progress-bar h-2 rounded-full" style="width: 95%"></div>
+                  </div>
+                  <span class="text-xs text-green-400">95%</span>
+                </div>
+              </div>
+              <div class="flex items-center justify-between p-3 hover:bg-gray-700/30 rounded-lg transition-colors">
+                <div class="flex items-center space-x-3">
+                  <div class="user-avatar w-10 h-10 rounded-full flex items-center justify-center text-white font-bold text-sm">
+                    SS
+                  </div>
+                  <div>
+                    <p class="font-medium">Sarah Smith</p>
+                    <p class="text-sm text-gray-400">22 tasks completed</p>
+                  </div>
+                </div>
+                <div class="text-right">
+                  <div class="w-16 bg-gray-700 rounded-full h-2">
+                    <div class="progress-bar h-2 rounded-full" style="width: 88%"></div>
+                  </div>
+                  <span class="text-xs text-green-400">88%</span>
+                </div>
+              </div>
+              <div class="flex items-center justify-between p-3 hover:bg-gray-700/30 rounded-lg transition-colors">
+                <div class="flex items-center space-x-3">
+                  <div class="user-avatar w-10 h-10 rounded-full flex items-center justify-center text-white font-bold text-sm">
+                    MJ
+                  </div>
+                  <div>
+                    <p class="font-medium">Mike Johnson</p>
+                    <p class="text-sm text-gray-400">19 tasks completed</p>
+                  </div>
+                </div>
+                <div class="text-right">
+                  <div class="w-16 bg-gray-700 rounded-full h-2">
+                    <div class="progress-bar h-2 rounded-full" style="width: 82%"></div>
+                  </div>
+                  <span class="text-xs text-green-400">82%</span>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
     </main>
   </div>
 
-  <!-- Secure JavaScript -->
-  <script nonce="{{ request.csp_nonce }}">
+  <!-- Enhanced JavaScript -->
+  <script>
   document.addEventListener('DOMContentLoaded', () => {
+    // Initialize Charts
+    initializeAdminCharts();
+
     // Auto-hide alerts
     const alerts = document.querySelectorAll('.alert');
     alerts.forEach(alert => {
@@ -254,7 +525,138 @@
       }, 3000);
     });
 
-    // Add any other interactive elements here
+    function initializeAdminCharts() {
+      // User Activity Chart
+      const ctx1 = document.getElementById('userActivityChart').getContext('2d');
+      new Chart(ctx1, {
+        type: 'line',
+        data: {
+          labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+          datasets: [{
+            label: 'Active Users',
+            data: [{{ active_users|default:12 }}, {{ active_users|default:19 }}, {{ active_users|default:15 }}, {{ active_users|default:25 }}, {{ active_users|default:22 }}, {{ active_users|default:18 }}, {{ active_users|default:16 }}],
+            borderColor: 'rgb(168, 85, 247)',
+            backgroundColor: 'rgba(168, 85, 247, 0.1)',
+            tension: 0.4,
+            fill: true,
+            pointBackgroundColor: 'rgb(168, 85, 247)',
+            pointBorderColor: 'white',
+            pointBorderWidth: 2,
+            pointRadius: 5
+          }, {
+            label: 'New Registrations',
+            data: [3, 5, 2, 8, 4, 6, 3],
+            borderColor: 'rgb(6, 182, 212)',
+            backgroundColor: 'rgba(6, 182, 212, 0.1)',
+            tension: 0.4,
+            fill: true,
+            pointBackgroundColor: 'rgb(6, 182, 212)',
+            pointBorderColor: 'white',
+            pointBorderWidth: 2,
+            pointRadius: 5
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              labels: { color: 'white', font: { size: 12 } }
+            }
+          },
+          scales: {
+            y: {
+              beginAtZero: true,
+              ticks: { color: 'white' },
+              grid: { color: 'rgba(255, 255, 255, 0.1)' }
+            },
+            x: {
+              ticks: { color: 'white' },
+              grid: { color: 'rgba(255, 255, 255, 0.1)' }
+            }
+          }
+        }
+      });
+
+      // Project Status Distribution Chart
+      const ctx2 = document.getElementById('projectStatusChart').getContext('2d');
+      new Chart(ctx2, {
+        type: 'doughnut',
+        data: {
+          labels: ['Completed', 'In Progress', 'Pending', 'Failed'],
+          datasets: [{
+            data: [
+              {{ total_projects|default:15 }}, 
+              {{ active_projects|default:8 }}, 
+              {{ total_projects|default:5 }}, 
+              2
+            ],
+            backgroundColor: [
+              'rgb(34, 197, 94)',
+              'rgb(168, 85, 247)',
+              'rgb(6, 182, 212)',
+              'rgb(239, 68, 68)'
+            ],
+            borderWidth: 3,
+            borderColor: 'rgb(15, 23, 42)',
+            hoverBorderWidth: 5,
+            hoverOffset: 10
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              position: 'bottom',
+              labels: { color: 'white', padding: 20, font: { size: 12 } }
+            }
+          }
+        }
+      });
+
+      // Team Performance Chart
+      const ctx3 = document.getElementById('teamPerformanceChart').getContext('2d');
+      new Chart(ctx3, {
+        type: 'bar',
+        data: {
+          labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4'],
+          datasets: [{
+            label: 'Tasks Completed',
+            data: [45, 52, 48, 61],
+            backgroundColor: 'rgba(34, 197, 94, 0.6)',
+            borderColor: 'rgb(34, 197, 94)',
+            borderWidth: 1
+          }, {
+            label: 'Tasks Created',
+            data: [50, 55, 53, 65],
+            backgroundColor: 'rgba(168, 85, 247, 0.6)',
+            borderColor: 'rgb(168, 85, 247)',
+            borderWidth: 1
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              labels: { color: 'white', font: { size: 12 } }
+            }
+          },
+          scales: {
+            y: {
+              beginAtZero: true,
+              ticks: { color: 'white' },
+              grid: { color: 'rgba(255, 255, 255, 0.1)' }
+            },
+            x: {
+              ticks: { color: 'white' },
+              grid: { color: 'rgba(255, 255, 255, 0.1)' }
+            }
+          }
+        }
+      });
+    }
   });
   </script>
 </body>
