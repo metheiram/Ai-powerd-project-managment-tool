@@ -8,4 +8,5 @@ dependencies = [
     "django-widget-tweaks>=1.5.0",
     "groq>=0.31.0",
     "python-dotenv>=1.1.1",
+    "pillow>=10.0.0",
 ]
