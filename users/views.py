@@ -21,6 +21,10 @@ from .models import Profile
 
 User = get_user_model()
 
+from django.views.decorators.csrf import csrf_protect
+from django.utils.decorators import method_decorator
+
+@csrf_protect
 def login_view(request):
     if request.method == 'POST':
         form = CustomAuthenticationForm(request, data=request.POST)

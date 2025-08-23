@@ -32,6 +32,13 @@ ALLOWED_HOSTS = [
     '*',  # Allow all hosts for development in Replit
 ]
 
+# Add CSRF trusted origins for Replit
+CSRF_TRUSTED_ORIGINS = [
+    'https://3347eeeb-f853-4824-ac2a-6b9ba2c0d97b-00-iwr73reo5iht.pike.replit.dev',
+    'https://*.replit.dev',
+    'https://*.replit.co',
+]
+
 
 # Application definition
 
@@ -151,7 +158,12 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
 
-STATIC_URL = 'static/'
+STATIC_URL = '/static/'
+STATICFILES_DIRS = [
+    BASE_DIR / 'static',
+    BASE_DIR / 'data' / 'static',
+]
+STATIC_ROOT = BASE_DIR / 'staticfiles'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
