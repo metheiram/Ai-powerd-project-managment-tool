@@ -1,3 +1,4 @@
+
 {% load static %}
 <!DOCTYPE html>
 <html lang="en">
@@ -7,6 +8,7 @@
   <title>Project Management Tool</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
     .calendar-day {
       transition: all 0.3s ease;
@@ -20,18 +22,21 @@
       color: white;
       font-weight: bold;
     }
-    .task-card {
+    .card {
       transition: all 0.3s ease;
+      backdrop-filter: blur(10px);
     }
-    .task-card:hover {
-      transform: translateY(-3px);
-      box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.2);
+    .card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3);
     }
-    .project-card {
-      transition: all 0.3s ease;
+    .metric-card {
+      background: linear-gradient(135deg, rgba(75, 85, 99, 0.1), rgba(55, 65, 81, 0.2));
+      border: 1px solid rgba(156, 163, 175, 0.2);
     }
-    .project-card:hover {
-      transform: translateX(5px);
+    .chart-container {
+      background: linear-gradient(135deg, rgba(31, 41, 55, 0.8), rgba(17, 24, 39, 0.9));
+      border: 1px solid rgba(75, 85, 99, 0.3);
     }
     @keyframes fadeIn {
       from { opacity: 0; transform: translateY(10px); }
@@ -39,6 +44,11 @@
     }
     .animate-fade-in {
       animation: fadeIn 0.5s ease forwards;
+    }
+    .progress-bar {
+      background: linear-gradient(90deg, #06b6d4, #8b5cf6);
+      height: 6px;
+      border-radius: 3px;
     }
   </style>
 </head>
@@ -56,8 +66,8 @@
       <nav>
         <ul class="space-y-2">
           <li>
-            <a href="{% url 'dashboard' %}" class="flex items-center p-3 rounded-lg hover:bg-purple-800/50 transition-colors">
-              <i class="fas fa-home mr-3 text-gray-400"></i>
+            <a href="{% url 'dashboard' %}" class="flex items-center p-3 rounded-lg bg-purple-800/50 text-purple-200 transition-colors">
+              <i class="fas fa-home mr-3"></i>
               <span>Home</span>
             </a>
           </li>
@@ -102,31 +112,132 @@
     </aside>
 
     <!-- Main Content -->
-    <div class="flex-1 p-8">
+    <div class="flex-1 p-8 bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
       <!-- Enhanced Header -->
       <header class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
         <div>
-          <h1 class="text-2xl md:text-3xl font-bold flex items-center">
-            <i class="fas fa-home mr-3 text-purple-400"></i>
-            Welcome to <span class="bg-gradient-to-r from-cyan-400 to-purple-500 text-transparent bg-clip-text ml-2">Your Dashboard</span>
+          <h1 class="text-3xl md:text-4xl font-bold flex items-center">
+            <i class="fas fa-chart-line mr-3 text-purple-400"></i>
+            Dashboard <span class="bg-gradient-to-r from-cyan-400 to-purple-500 text-transparent bg-clip-text ml-2">Overview</span>
           </h1>
-          <p class="text-gray-400 mt-1">Manage your projects and tasks efficiently</p>
+          <p class="text-gray-400 mt-2">Welcome back! Here's what's happening with your projects</p>
         </div>
 
         <div class="relative group">
           <img src="{% if user.profile.profile_picture %}{{ user.profile.profile_picture.url }}{% else %}{% static 'data/default-profile.png' %}{% endif %}"
                alt="Profile"
                class="w-16 h-16 rounded-full border-4 border-purple-500/80 object-cover hover:border-cyan-400 transition-all shadow-lg hover:scale-105"/>
-          <div class="absolute bottom-0 right-0 bg-gray-900 p-2 rounded-full border-2 border-gray-800 group-hover:bg-purple-600 transition-colors">
-            <i class="fas fa-cog text-white text-xs"></i>
+          <div class="absolute bottom-0 right-0 bg-green-500 p-1 rounded-full border-2 border-gray-800">
+            <div class="w-3 h-3 bg-green-500 rounded-full"></div>
           </div>
         </div>
       </header>
 
-      <!-- Calendar and Tasks -->
-      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <!-- Key Metrics Cards -->
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        <div class="card metric-card rounded-xl p-6">
+          <div class="flex items-center justify-between">
+            <div>
+              <p class="text-gray-400 text-sm font-medium">Total Projects</p>
+              <p class="text-2xl font-bold text-cyan-400" id="total-projects">0</p>
+              <p class="text-xs text-green-400 mt-1">
+                <i class="fas fa-arrow-up mr-1"></i>
+                <span id="projects-growth">+12%</span> this month
+              </p>
+            </div>
+            <div class="bg-cyan-500/20 p-3 rounded-full">
+              <i class="fas fa-project-diagram text-cyan-400 text-xl"></i>
+            </div>
+          </div>
+        </div>
+
+        <div class="card metric-card rounded-xl p-6">
+          <div class="flex items-center justify-between">
+            <div>
+              <p class="text-gray-400 text-sm font-medium">Active Tasks</p>
+              <p class="text-2xl font-bold text-purple-400" id="active-tasks">0</p>
+              <p class="text-xs text-green-400 mt-1">
+                <i class="fas fa-arrow-up mr-1"></i>
+                <span id="tasks-growth">+8%</span> this week
+              </p>
+            </div>
+            <div class="bg-purple-500/20 p-3 rounded-full">
+              <i class="fas fa-tasks text-purple-400 text-xl"></i>
+            </div>
+          </div>
+        </div>
+
+        <div class="card metric-card rounded-xl p-6">
+          <div class="flex items-center justify-between">
+            <div>
+              <p class="text-gray-400 text-sm font-medium">Completion Rate</p>
+              <p class="text-2xl font-bold text-green-400" id="completion-rate">0%</p>
+              <p class="text-xs text-green-400 mt-1">
+                <i class="fas fa-arrow-up mr-1"></i>
+                <span id="completion-growth">+5%</span> improved
+              </p>
+            </div>
+            <div class="bg-green-500/20 p-3 rounded-full">
+              <i class="fas fa-chart-pie text-green-400 text-xl"></i>
+            </div>
+          </div>
+        </div>
+
+        <div class="card metric-card rounded-xl p-6">
+          <div class="flex items-center justify-between">
+            <div>
+              <p class="text-gray-400 text-sm font-medium">Overdue Tasks</p>
+              <p class="text-2xl font-bold text-red-400" id="overdue-tasks">0</p>
+              <p class="text-xs text-red-400 mt-1">
+                <i class="fas fa-exclamation-triangle mr-1"></i>
+                Need attention
+              </p>
+            </div>
+            <div class="bg-red-500/20 p-3 rounded-full">
+              <i class="fas fa-clock text-red-400 text-xl"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Charts Section -->
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+        <!-- Project Progress Chart -->
+        <div class="card chart-container rounded-xl p-6">
+          <div class="flex items-center justify-between mb-6">
+            <h3 class="text-xl font-bold flex items-center">
+              <i class="fas fa-chart-bar mr-3 text-purple-400"></i>
+              Project Progress
+            </h3>
+            <div class="flex space-x-2">
+              <button class="text-xs px-3 py-1 bg-purple-500/20 text-purple-400 rounded-full">7D</button>
+              <button class="text-xs px-3 py-1 bg-gray-600 text-gray-300 rounded-full">30D</button>
+            </div>
+          </div>
+          <div class="h-64">
+            <canvas id="projectProgressChart"></canvas>
+          </div>
+        </div>
+
+        <!-- Task Status Pie Chart -->
+        <div class="card chart-container rounded-xl p-6">
+          <div class="flex items-center justify-between mb-6">
+            <h3 class="text-xl font-bold flex items-center">
+              <i class="fas fa-chart-pie mr-3 text-cyan-400"></i>
+              Task Distribution
+            </h3>
+            <button class="text-xs px-3 py-1 bg-cyan-500/20 text-cyan-400 rounded-full">Current Sprint</button>
+          </div>
+          <div class="h-64">
+            <canvas id="taskStatusChart"></canvas>
+          </div>
+        </div>
+      </div>
+
+      <!-- Calendar and Recent Activity -->
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
         <!-- Enhanced Calendar -->
-        <div class="bg-gray-800/80 shadow-lg rounded-xl p-6 border border-gray-700">
+        <div class="card bg-gray-800/80 shadow-lg rounded-xl p-6 border border-gray-700">
           <div class="flex justify-between items-center mb-6">
             <button id="prevMonth" class="text-gray-400 hover:text-purple-400 transition-colors p-2 rounded-full hover:bg-gray-700">
               <i class="fas fa-chevron-left"></i>
@@ -150,75 +261,59 @@
           <div id="calendarDays" class="grid grid-cols-7 gap-2 text-center"></div>
           
           <div class="mt-6 pt-4 border-t border-gray-700">
-            <h3 class="font-semibold mb-2 flex items-center">
+            <h3 class="font-semibold mb-3 flex items-center">
               <i class="fas fa-calendar-day mr-2 text-purple-400"></i>
-              Today's Events
+              Upcoming Deadlines
             </h3>
-            <div class="space-y-2">
-              <div class="text-sm text-gray-400">No events scheduled</div>
+            <div id="upcoming-deadlines" class="space-y-2">
+              <div class="text-sm text-gray-400">Loading deadlines...</div>
             </div>
           </div>
         </div>
 
-        <!-- Today's Tasks -->
-        <div class="lg:col-span-2 bg-gray-800/80 shadow-lg rounded-xl p-6 border border-gray-700">
+        <!-- Recent Activity Feed -->
+        <div class="lg:col-span-2 card bg-gray-800/80 shadow-lg rounded-xl p-6 border border-gray-700">
           <div class="flex justify-between items-center mb-6">
             <h2 class="text-xl font-bold flex items-center">
-              <i class="fas fa-tasks mr-3 text-purple-400"></i>
-              Today's Tasks
+              <i class="fas fa-history mr-3 text-purple-400"></i>
+              Recent Activity
             </h2>
             <a href="{% url 'tasks:tasks_tab' %}" class="text-sm text-purple-400 hover:text-cyan-400 transition-colors flex items-center">
               View All <i class="fas fa-arrow-right ml-1"></i>
             </a>
           </div>
           
-          <div id="task-list" class="space-y-3">
-            <div class="animate-fade-in bg-gray-700/50 p-4 rounded-lg task-card">
-              <div class="flex items-start">
-                <div class="flex-shrink-0 pt-1">
-                  <div class="w-3 h-3 rounded-full bg-purple-500 mt-1"></div>
-                </div>
-                <div class="ml-3 flex-1">
-                  <div class="flex justify-between">
-                    <h3 class="font-medium">Click a date to view tasks</h3>
-                    <span class="text-xs text-gray-400">No date selected</span>
-                  </div>
-                  <p class="text-sm text-gray-400 mt-1">Select a date from the calendar to see tasks</p>
-                </div>
-              </div>
-            </div>
+          <div id="activity-feed" class="space-y-4 max-h-96 overflow-y-auto">
+            <!-- Activity items will be populated here -->
           </div>
         </div>
       </div>
 
-      <!-- Projects Section -->
-      <div class="mt-6 bg-gray-800/80 shadow-lg rounded-xl p-6 border border-gray-700">
+      <!-- Project Cards Section -->
+      <div class="card bg-gray-800/80 shadow-lg rounded-xl p-6 border border-gray-700">
         <div class="flex justify-between items-center mb-6">
           <h2 class="text-xl font-bold flex items-center">
-            <i class="fas fa-project-diagram mr-3 text-purple-400"></i>
+            <i class="fas fa-rocket mr-3 text-purple-400"></i>
             Active Projects
           </h2>
-          <a href="{% url 'project:project_tab' %}" class="text-sm text-purple-400 hover:text-cyan-400 transition-colors flex items-center">
-            View All <i class="fas fa-arrow-right ml-1"></i>
-          </a>
+          <div class="flex items-center space-x-4">
+            <div class="flex items-center space-x-2">
+              <span class="text-sm text-gray-400">Filter:</span>
+              <select class="bg-gray-700 text-white text-sm rounded px-3 py-1 border border-gray-600">
+                <option>All Status</option>
+                <option>In Progress</option>
+                <option>Pending</option>
+                <option>Completed</option>
+              </select>
+            </div>
+            <a href="{% url 'project:project_tab' %}" class="text-sm text-purple-400 hover:text-cyan-400 transition-colors flex items-center">
+              View All <i class="fas fa-arrow-right ml-1"></i>
+            </a>
+          </div>
         </div>
         
-        <div id="project-list" class="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div class="animate-fade-in project-card bg-gray-700/50 p-4 rounded-lg border-l-4 border-purple-500">
-            <div class="flex justify-between items-start">
-              <div>
-                <h3 class="font-medium">Select a date</h3>
-                <p class="text-sm text-gray-400 mt-1">Choose a date to view projects</p>
-              </div>
-              <span class="text-xs px-2 py-1 rounded-full bg-gray-600 text-gray-300">Pending</span>
-            </div>
-            <div class="mt-3 flex items-center justify-between text-xs">
-              <span class="text-gray-400">No date selected</span>
-              <button class="text-purple-400 hover:text-cyan-400 transition-colors">
-                <i class="fas fa-chevron-right"></i>
-              </button>
-            </div>
-          </div>
+        <div id="project-cards" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <!-- Project cards will be populated here -->
         </div>
       </div>
     </div>
@@ -228,9 +323,224 @@
     document.addEventListener('DOMContentLoaded', function() {
       const calendarDaysContainer = document.getElementById('calendarDays');
       const calendarMonth = document.getElementById('calendarMonth');
-      const taskList = document.getElementById('task-list');
-      const projectList = document.getElementById('project-list');
+      const activityFeed = document.getElementById('activity-feed');
+      const projectCards = document.getElementById('project-cards');
+      const upcomingDeadlines = document.getElementById('upcoming-deadlines');
       let currentDate = new Date();
+
+      // Initialize Charts
+      initializeCharts();
+      
+      // Load dashboard data
+      loadDashboardMetrics();
+      
+      function initializeCharts() {
+        // Project Progress Chart
+        const ctx1 = document.getElementById('projectProgressChart').getContext('2d');
+        new Chart(ctx1, {
+          type: 'line',
+          data: {
+            labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+            datasets: [{
+              label: 'Completed Tasks',
+              data: [12, 19, 15, 25, 22, 30, 28],
+              borderColor: 'rgb(168, 85, 247)',
+              backgroundColor: 'rgba(168, 85, 247, 0.1)',
+              tension: 0.4,
+              fill: true
+            }, {
+              label: 'New Tasks',
+              data: [8, 15, 12, 18, 16, 20, 24],
+              borderColor: 'rgb(6, 182, 212)',
+              backgroundColor: 'rgba(6, 182, 212, 0.1)',
+              tension: 0.4,
+              fill: true
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+              legend: {
+                labels: { color: 'white' }
+              }
+            },
+            scales: {
+              y: {
+                ticks: { color: 'white' },
+                grid: { color: 'rgba(255, 255, 255, 0.1)' }
+              },
+              x: {
+                ticks: { color: 'white' },
+                grid: { color: 'rgba(255, 255, 255, 0.1)' }
+              }
+            }
+          }
+        });
+
+        // Task Status Chart
+        const ctx2 = document.getElementById('taskStatusChart').getContext('2d');
+        new Chart(ctx2, {
+          type: 'doughnut',
+          data: {
+            labels: ['Completed', 'In Progress', 'Pending', 'Overdue'],
+            datasets: [{
+              data: [45, 25, 20, 10],
+              backgroundColor: [
+                'rgb(34, 197, 94)',
+                'rgb(168, 85, 247)',
+                'rgb(6, 182, 212)',
+                'rgb(239, 68, 68)'
+              ],
+              borderWidth: 2,
+              borderColor: 'rgb(17, 24, 39)'
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+              legend: {
+                position: 'bottom',
+                labels: { color: 'white', padding: 20 }
+              }
+            }
+          }
+        });
+      }
+
+      function loadDashboardMetrics() {
+        // Simulate loading metrics
+        document.getElementById('total-projects').textContent = '24';
+        document.getElementById('active-tasks').textContent = '156';
+        document.getElementById('completion-rate').textContent = '78%';
+        document.getElementById('overdue-tasks').textContent = '5';
+
+        // Load upcoming deadlines
+        const deadlines = [
+          { task: 'Website Redesign', date: 'Tomorrow', priority: 'high' },
+          { task: 'API Integration', date: 'Jan 30', priority: 'medium' },
+          { task: 'User Testing', date: 'Feb 2', priority: 'low' }
+        ];
+
+        upcomingDeadlines.innerHTML = deadlines.map(deadline => `
+          <div class="flex items-center justify-between p-2 bg-gray-700/30 rounded">
+            <div>
+              <p class="text-sm font-medium">${deadline.task}</p>
+              <p class="text-xs text-gray-400">${deadline.date}</p>
+            </div>
+            <span class="w-2 h-2 rounded-full ${
+              deadline.priority === 'high' ? 'bg-red-500' :
+              deadline.priority === 'medium' ? 'bg-yellow-500' : 'bg-green-500'
+            }"></span>
+          </div>
+        `).join('');
+
+        // Load recent activity
+        const activities = [
+          { user: 'John Doe', action: 'completed task', item: 'Login System', time: '2 minutes ago', icon: 'fa-check-circle', color: 'text-green-400' },
+          { user: 'Sarah Smith', action: 'created project', item: 'Mobile App', time: '15 minutes ago', icon: 'fa-plus-circle', color: 'text-blue-400' },
+          { user: 'Mike Johnson', action: 'updated', item: 'Database Schema', time: '1 hour ago', icon: 'fa-edit', color: 'text-yellow-400' },
+          { user: 'Emily Davis', action: 'commented on', item: 'UI Review', time: '2 hours ago', icon: 'fa-comment', color: 'text-purple-400' }
+        ];
+
+        activityFeed.innerHTML = activities.map(activity => `
+          <div class="flex items-start space-x-3 p-3 bg-gray-700/30 rounded-lg hover:bg-gray-700/50 transition-colors">
+            <div class="flex-shrink-0">
+              <i class="fas ${activity.icon} ${activity.color}"></i>
+            </div>
+            <div class="flex-1 min-w-0">
+              <p class="text-sm">
+                <span class="font-medium text-white">${activity.user}</span>
+                <span class="text-gray-400">${activity.action}</span>
+                <span class="font-medium text-purple-400">${activity.item}</span>
+              </p>
+              <p class="text-xs text-gray-500">${activity.time}</p>
+            </div>
+          </div>
+        `).join('');
+
+        // Load project cards
+        loadProjectCards();
+      }
+
+      function loadProjectCards() {
+        const projects = [
+          {
+            title: 'E-commerce Platform',
+            description: 'Building a modern e-commerce solution with React and Django',
+            progress: 75,
+            status: 'in_progress',
+            dueDate: '2025-02-15',
+            team: 5,
+            tasks: { completed: 12, total: 16 }
+          },
+          {
+            title: 'Mobile App Design',
+            description: 'UI/UX design for the mobile application',
+            progress: 90,
+            status: 'near_completion',
+            dueDate: '2025-01-30',
+            team: 3,
+            tasks: { completed: 18, total: 20 }
+          },
+          {
+            title: 'Data Migration',
+            description: 'Migrating legacy data to new system',
+            progress: 45,
+            status: 'in_progress',
+            dueDate: '2025-03-01',
+            team: 4,
+            tasks: { completed: 9, total: 20 }
+          }
+        ];
+
+        projectCards.innerHTML = projects.map(project => `
+          <div class="card bg-gray-700/50 p-6 rounded-lg border-l-4 ${
+            project.status === 'near_completion' ? 'border-green-500' :
+            project.status === 'in_progress' ? 'border-purple-500' : 'border-cyan-500'
+          }">
+            <div class="flex justify-between items-start mb-4">
+              <div>
+                <h3 class="font-semibold text-lg mb-2">${project.title}</h3>
+                <p class="text-sm text-gray-400 mb-3">${project.description}</p>
+              </div>
+              <span class="text-xs px-2 py-1 rounded-full ${
+                project.status === 'near_completion' ? 'bg-green-500/20 text-green-400' :
+                project.status === 'in_progress' ? 'bg-purple-500/20 text-purple-400' :
+                'bg-cyan-500/20 text-cyan-400'
+              }">${project.progress}%</span>
+            </div>
+            
+            <div class="space-y-3">
+              <div>
+                <div class="flex justify-between text-sm mb-1">
+                  <span class="text-gray-400">Progress</span>
+                  <span class="text-white">${project.progress}%</span>
+                </div>
+                <div class="w-full bg-gray-600 rounded-full h-2">
+                  <div class="progress-bar rounded-full h-2" style="width: ${project.progress}%"></div>
+                </div>
+              </div>
+              
+              <div class="flex justify-between items-center text-xs text-gray-400">
+                <div class="flex items-center">
+                  <i class="fas fa-users mr-1"></i>
+                  <span>${project.team} members</span>
+                </div>
+                <div class="flex items-center">
+                  <i class="fas fa-tasks mr-1"></i>
+                  <span>${project.tasks.completed}/${project.tasks.total} tasks</span>
+                </div>
+                <div class="flex items-center">
+                  <i class="fas fa-calendar mr-1"></i>
+                  <span>Due ${new Date(project.dueDate).toLocaleDateString()}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        `).join('');
+      }
 
       function renderCalendar() {
         const year = currentDate.getFullYear();
@@ -281,95 +591,8 @@
           selectedDay.classList.add('selected');
         }
 
-        // Fetch tasks for selected date
-        fetch(`/tasks/by-date/?date=${dateStr}`)
-          .then(res => res.json())
-          .then(data => {
-            taskList.innerHTML = '';
-            if (data.tasks?.length) {
-              data.tasks.forEach((task, index) => {
-                const taskItem = document.createElement('div');
-                taskItem.className = `animate-fade-in bg-gray-700/50 p-4 rounded-lg task-card`;
-                taskItem.style.animationDelay = `${index * 0.1}s`;
-                
-                // Determine status color
-                let statusColor = 'gray';
-                if (task.status === 'completed') statusColor = 'green';
-                else if (task.status === 'in_progress') statusColor = 'blue';
-                else if (task.status === 'overdue') statusColor = 'red';
-                
-                taskItem.innerHTML = `
-                  <div class="flex items-start">
-                    <div class="flex-shrink-0 pt-1">
-                      <div class="w-3 h-3 rounded-full bg-${statusColor}-500 mt-1"></div>
-                    </div>
-                    <div class="ml-3 flex-1">
-                      <div class="flex justify-between">
-                        <h3 class="font-medium">${task.title}</h3>
-                        <span class="text-xs text-gray-400 capitalize">${task.status.replace('_', ' ')}</span>
-                      </div>
-                      <p class="text-sm text-gray-400 mt-1">${task.description || 'No description'}</p>
-                      ${task.project ? `<p class="text-xs text-purple-400 mt-2">Project: ${task.project}</p>` : ''}
-                    </div>
-                  </div>
-                `;
-                taskList.appendChild(taskItem);
-              });
-            } else {
-              taskList.innerHTML = `
-                <div class="animate-fade-in bg-gray-700/50 p-4 rounded-lg text-center">
-                  <i class="fas fa-tasks text-2xl text-gray-500 mb-2"></i>
-                  <p class="text-gray-400">No tasks for this date</p>
-                </div>
-              `;
-            }
-          });
-
-        // Fetch projects for selected date
-        fetch(`/project/by-date/?date=${dateStr}`)
-          .then(res => res.json())
-          .then(data => {
-            projectList.innerHTML = '';
-            if (data.projects?.length) {
-              data.projects.forEach((project, index) => {
-                const projectItem = document.createElement('div');
-                projectItem.className = `animate-fade-in project-card bg-gray-700/50 p-4 rounded-lg border-l-4 ${
-                  project.status === 'completed' ? 'border-green-500' : 
-                  project.status === 'in_progress' ? 'border-blue-500' :
-                  'border-purple-500'
-                }`;
-                projectItem.style.animationDelay = `${index * 0.1}s`;
-                
-                projectItem.innerHTML = `
-                  <div class="flex justify-between items-start">
-                    <div>
-                      <h3 class="font-medium">${project.title}</h3>
-                      <p class="text-sm text-gray-400 mt-1 line-clamp-2">${project.description || 'No description'}</p>
-                    </div>
-                    <span class="text-xs px-2 py-1 rounded-full ${
-                      project.status === 'completed' ? 'bg-green-500/20 text-green-400' :
-                      project.status === 'in_progress' ? 'bg-blue-500/20 text-blue-400' :
-                      'bg-purple-500/20 text-purple-400'
-                    } capitalize">${project.status.replace('_', ' ')}</span>
-                  </div>
-                  <div class="mt-3 flex items-center justify-between text-xs">
-                    <span class="text-gray-400">Due: ${new Date(project.end_date).toLocaleDateString()}</span>
-                    <a href="/project/${project.id}/" class="text-purple-400 hover:text-cyan-400 transition-colors">
-                      <i class="fas fa-chevron-right"></i>
-                    </a>
-                  </div>
-                `;
-                projectList.appendChild(projectItem);
-              });
-            } else {
-              projectList.innerHTML = `
-                <div class="animate-fade-in bg-gray-700/50 p-4 rounded-lg text-center col-span-full">
-                  <i class="fas fa-project-diagram text-2xl text-gray-500 mb-2"></i>
-                  <p class="text-gray-400">No projects for this date</p>
-                </div>
-              `;
-            }
-          });
+        // Show selected date info
+        console.log('Selected date:', dateStr);
       }
 
       // Navigation buttons
@@ -383,10 +606,8 @@
         renderCalendar();
       });
 
-      // Initialize calendar with today's date selected
+      // Initialize calendar
       renderCalendar();
-      const todayStr = new Date().toISOString().split('T')[0];
-      handleDateClick(todayStr);
     });
   </script>
 </body>
